@@ -24,9 +24,8 @@ public class main extends InputAdapter implements ApplicationListener {
 	}
 	private float deltaTime = 0;
 	private float distance = 0;
-	SpriteBatch batch;
 	OrthographicCamera camera;
-	Sprite sprite;
+
 
 	private Stage stage;
 	@Override
@@ -50,7 +49,6 @@ public class main extends InputAdapter implements ApplicationListener {
 	//public void resize(int width, int height) {
 
 	//}
-
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(255, 1, 1, 255);
@@ -60,12 +58,6 @@ public class main extends InputAdapter implements ApplicationListener {
 		deltaTime = Gdx.graphics.getDeltaTime();
 		distance = distance + (20*deltaTime);
 
-
-		batch.setProjectionMatrix(camera.combined);
-
-		batch.begin();
-		sprite.draw(batch);
-		batch.end();
 	}
 
 
