@@ -10,7 +10,8 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("java-game");
-		config.setWindowedMode(1000,800);
+		config.setWindowedMode(1000,700);
+		config.setResizable(true);
 		config.useVsync(true);
 		new Lwjgl3Application(new main(), config);
 	}

@@ -6,7 +6,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import org.w3c.dom.Text;
+
 public class main extends InputAdapter implements ApplicationListener {
 	@Override
 	public boolean keyDown(int keycode) {
@@ -22,14 +27,17 @@ public class main extends InputAdapter implements ApplicationListener {
 	SpriteBatch batch;
 	OrthographicCamera camera;
 	Sprite sprite;
-	
+
+	private Stage stage;
 	@Override
 	public void create () {
+		stage = new Stage(new ScreenViewport());
+		Texture texture = new Texture((Gdx.files.internal("Background/background1.png")));
+		Image background = new Image(texture);
+		background.setPosition((float) Gdx.graphics.getWidth() /3-background.getWidth()/2, (float) (Gdx.graphics.getHeight() * 2) /3-background.getHeight()/2);
+		stage.addActor(background);
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		batch = new SpriteBatch();
-		sprite = new Sprite(new Texture("assets/badlogic.jpg"));
-		sprite.setPosition(-0,0);
-		sprite.setSize(100,100);
+
 		Gdx.input.setInputProcessor(this);
 	}
 
@@ -47,7 +55,8 @@ public class main extends InputAdapter implements ApplicationListener {
 	public void render () {
 		Gdx.gl.glClearColor(255, 1, 1, 255);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		stage.act();
+		stage.draw();
 		deltaTime = Gdx.graphics.getDeltaTime();
 		distance = distance + (20*deltaTime);
 
