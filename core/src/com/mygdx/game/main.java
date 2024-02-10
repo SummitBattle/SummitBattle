@@ -7,17 +7,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import org.w3c.dom.Text;
 
 
 class main extends InputAdapter implements ApplicationListener {
@@ -27,6 +24,7 @@ class main extends InputAdapter implements ApplicationListener {
 
 
 	private Stage stage;
+	private Label outputLabel;
 
 
 
@@ -34,9 +32,9 @@ class main extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void create () {
-
 		//Background
 		stage = new Stage(new ScreenViewport());
+		Gdx.input.setInputProcessor(stage);
 		int Help_Guides = 12;
 		int row_height = Gdx.graphics.getWidth() / 12;
 		int col_width = Gdx.graphics.getWidth() / 12;
@@ -50,7 +48,7 @@ class main extends InputAdapter implements ApplicationListener {
 		//Labels
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixelfont.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-		parameter.size = 30;
+		parameter.size = 24;
 		parameter.borderWidth = 1;
 		parameter.color = Color.WHITE;
 		parameter.shadowOffsetX = 3;
@@ -63,34 +61,48 @@ class main extends InputAdapter implements ApplicationListener {
 		labelStyle.font = font24;
 
 		Label Pixelfont = new Label("Summit Battle",labelStyle);
-		Pixelfont.setSize(Gdx.graphics.getWidth()/Help_Guides*5,row_height);
-		Pixelfont.setPosition(Gdx.graphics.getWidth()/2 - 125,Gdx.graphics.getHeight()-100);
+		Pixelfont.setSize((float) Gdx.graphics.getWidth() /Help_Guides*5,row_height);
+		Pixelfont.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
 		stage.addActor(Pixelfont);
 		//Button
+		Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
+		Button button2 = new TextButton("Text Button", mySkin);
+		button2.setSize(col_width * 4, row_height);
+		button2.setPosition(10, Gdx.graphics.getHeight()-200);
 
-		Skin Button = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
+		button2.addListener(new InputListener() {
 
-		Button button2 = new TextButton("Text Button",Button,"small");
-		button2.setSize(col_width*4,row_height);
-		button2.setPosition(col_width*7,Gdx.graphics.getHeight()-row_height*3);
-
-
-		button2.addListener(new InputListener(){
 			@Override
-			public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-				Pixelfont.setText("Press a Button");
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				outputLabel.setText("Pressed Text Button");
 			}
+
 			@Override
-			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-				Pixelfont.setText("Pressed Text Button");
-				return true;
+			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+				outputLabel.setText("Press a Button");
 			}
+
+
 		});
 		stage.addActor(button2);
 
 
 
+		outputLabel = new Label("Press a Button", mySkin);
+		outputLabel.setSize(Gdx.graphics.getWidth(), row_height);
+		outputLabel.setPosition(0, row_height);
+		outputLabel.setAlignment(Align.center);
+		stage.addActor(outputLabel);
+
+
 	}
+
+
+
+
+
+
+
 
 	@Override
 	public void resize(int width, int height) {
