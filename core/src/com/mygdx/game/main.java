@@ -6,15 +6,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import javafx.scene.layout.Background;
 
 
 class main extends InputAdapter implements ApplicationListener {
@@ -25,26 +32,51 @@ class main extends InputAdapter implements ApplicationListener {
 
 	private Stage stage;
 	private Label outputLabel;
+	private boolean hover;
 
+	Texture background;
 
+	private int scrollX;
+	SpriteBatch batch;
+	Sprite sprite;
 
-
+	ParallaxLayer[] layers;
 
 	@Override
 	public void create () {
 		//Background
 		stage = new Stage(new ScreenViewport());
-		Gdx.input.setInputProcessor(stage);
 		int Help_Guides = 12;
 		int row_height = Gdx.graphics.getWidth() / 12;
 		int col_width = Gdx.graphics.getWidth() / 12;
-		Texture texture = new Texture((Gdx.files.internal("Background/background1.png")));
-		Image background = new Image(texture);
-		background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		background.setPosition((float) Gdx.graphics.getWidth()-background.getWidth(), (float) (Gdx.graphics.getHeight()-background.getHeight()));
-		stage.addActor(background);
+		Gdx.input.setInputProcessor(stage);
+		background = new Texture((Gdx.files.internal("Background/background1.png")));
+		batch = new SpriteBatch();
 		//Display
-		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera = new OrthographicCamera(background.getWidth(), background.getHeight());
+
+		layers = new ParallaxLayer[8];
+
+		layers[0] = new ParallaxLayer(background, 0.1f, true, false);
+
+		layers[1] = new ParallaxLayer(new Texture("Background/far_mountains.png"), 0.6f, true, true);
+		layers[2] = new ParallaxLayer(new Texture("Background/grassy_mountains.png"), 0.6f, true, false);
+		layers[3] = new ParallaxLayer(new Texture("Background/clouds_mid_t.png"), 0.6f, true, false);
+		layers[4] = new ParallaxLayer(new Texture("Background/clouds_mid.png"), 0.6f, true, false);
+		layers[5] = new ParallaxLayer(new Texture("Background/hill.png"), 0.6f, true, false);
+		layers[6] = new ParallaxLayer(new Texture("Background/clouds_front_t.png"), 0.6f, true, false);
+		layers[7] = new ParallaxLayer(new Texture("Background/clouds_front.png"), 0.6f, true, false);
+
+
+
+
+
+
+
+
+		for (ParallaxLayer layer : layers) {
+			layer.setCamera(camera);
+		}
 		//Labels
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixelfont.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -64,35 +96,61 @@ class main extends InputAdapter implements ApplicationListener {
 		Pixelfont.setSize((float) Gdx.graphics.getWidth() /Help_Guides*5,row_height);
 		Pixelfont.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
 		stage.addActor(Pixelfont);
+
 		//Button
 		Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
-		Button button2 = new TextButton("Text Button", mySkin);
-		button2.setSize(col_width * 4, row_height);
-		button2.setPosition(10, Gdx.graphics.getHeight()-200);
-
-		button2.addListener(new InputListener() {
-
+		Button FindBattle = new TextButton("Find a battle", mySkin);
+		FindBattle.setSize(col_width * 4, row_height);
+		FindBattle.setPosition(10, Gdx.graphics.getHeight()-200);
+		FindBattle.addListener(new InputListener() {
 			@Override
 			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				outputLabel.setText("Pressed Text Button");
-			}
 
+			}
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+
+
+
+            }
+			});
+		stage.addActor(FindBattle);
+
+		Button Settings = new TextButton("        Settings", mySkin);
+		Settings.setSize(col_width*2 , row_height);
+		Settings.setPosition(10, Gdx.graphics.getHeight()-300);
+
+		Settings.addListener(new InputListener() {
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+			}
 			@Override
 			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-				outputLabel.setText("Press a Button");
 			}
-
-
 		});
-		stage.addActor(button2);
+		stage.addActor(Settings);
+
+		Button Character = new TextButton("         Change Character", mySkin);
+		Character.setSize(col_width * 4, row_height);
+		Character.setPosition(10, Gdx.graphics.getHeight()-400);
+		Character.addListener(new InputListener() {
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				hover = true;
+			}
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+				hover = false;
+
+
+			}
+		});
+		stage.addActor(Character);
 
 
 
-		outputLabel = new Label("Press a Button", mySkin);
-		outputLabel.setSize(Gdx.graphics.getWidth(), row_height);
-		outputLabel.setPosition(0, row_height);
-		outputLabel.setAlignment(Align.center);
-		stage.addActor(outputLabel);
+
+
 
 
 	}
@@ -115,17 +173,29 @@ class main extends InputAdapter implements ApplicationListener {
 	//}
 	@Override
 	public void render () {
+		deltaTime = Gdx.graphics.getDeltaTime();
+		float delta = distance + (20*deltaTime);
+
+
 		Gdx.gl.glClearColor(255, 1, 1, 255);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		int speed = 100;
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.position.x -= speed * Gdx.graphics.getDeltaTime();
+		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.position.x += speed * Gdx.graphics.getDeltaTime();
+		if (Gdx.input.isKeyPressed(Input.Keys.UP)) camera.position.y -= speed * Gdx.graphics.getDeltaTime();
+		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.position.y += speed * Gdx.graphics.getDeltaTime();
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+		batch.begin();
+		for (ParallaxLayer layer : layers) {
+			layer.render(batch);
+		}
+		batch.end();
 		stage.act();
 		stage.draw();
-		deltaTime = Gdx.graphics.getDeltaTime();
-		distance = distance + (20*deltaTime);
 
 	}
-
-
-
 
 	@Override
 	public void pause() {
