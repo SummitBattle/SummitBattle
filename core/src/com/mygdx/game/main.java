@@ -31,12 +31,13 @@ class main extends InputAdapter implements ApplicationListener {
 
 
 	private Stage stage;
-	private Label outputLabel;
-	private boolean hover;
+
+	private boolean boundary_y_up;
+	private boolean boundary_y_down;
 
 	Texture background;
 
-	private int scrollX;
+
 	SpriteBatch batch;
 	Sprite sprite;
 
@@ -50,28 +51,22 @@ class main extends InputAdapter implements ApplicationListener {
 		int row_height = Gdx.graphics.getWidth() / 12;
 		int col_width = Gdx.graphics.getWidth() / 12;
 		Gdx.input.setInputProcessor(stage);
-		background = new Texture((Gdx.files.internal("Background/background1.png")));
+		background = new Texture((Gdx.files.internal("Background/sky_fc.png")));
 		batch = new SpriteBatch();
-		//Display
-		camera = new OrthographicCamera(background.getWidth(), background.getHeight());
+		//Parallax Background
+		camera = new OrthographicCamera(background.getWidth()-20, background.getHeight()-10);
+
 
 		layers = new ParallaxLayer[8];
 
-		layers[0] = new ParallaxLayer(background, 0.1f, true, false);
-
-		layers[1] = new ParallaxLayer(new Texture("Background/far_mountains.png"), 0.6f, true, true);
-		layers[2] = new ParallaxLayer(new Texture("Background/grassy_mountains.png"), 0.6f, true, false);
-		layers[3] = new ParallaxLayer(new Texture("Background/clouds_mid_t.png"), 0.6f, true, false);
-		layers[4] = new ParallaxLayer(new Texture("Background/clouds_mid.png"), 0.6f, true, false);
-		layers[5] = new ParallaxLayer(new Texture("Background/hill.png"), 0.6f, true, false);
-		layers[6] = new ParallaxLayer(new Texture("Background/clouds_front_t.png"), 0.6f, true, false);
-		layers[7] = new ParallaxLayer(new Texture("Background/clouds_front.png"), 0.6f, true, false);
-
-
-
-
-
-
+		layers[0] = new ParallaxLayer(background, 0f, true, false);
+		layers[1] = new ParallaxLayer(new Texture("Background/far_mountains_fc.png"), 0.2f, true, true);
+		layers[2] = new ParallaxLayer(new Texture("Background/grassy_mountains_fc.png"), 0.4f, true, false);
+		layers[3] = new ParallaxLayer(new Texture("Background/clouds_mid_t_fc.png"), 0.6f, true, false);
+		layers[4] = new ParallaxLayer(new Texture("Background/clouds_mid_fc.png"), 0.8f, true, false);
+		layers[5] = new ParallaxLayer(new Texture("Background/hill.png"), 2f, true, false);
+		layers[6] = new ParallaxLayer(new Texture("Background/clouds_front_t_fc.png"), 2.5f, true, false);
+		layers[7] = new ParallaxLayer(new Texture("Background/clouds_front_fc.png"), 3f, true, false);
 
 
 		for (ParallaxLayer layer : layers) {
@@ -85,16 +80,16 @@ class main extends InputAdapter implements ApplicationListener {
 		parameter.color = Color.WHITE;
 		parameter.shadowOffsetX = 3;
 		parameter.shadowOffsetY = 3;
-		parameter.shadowColor = new Color(0, 0.5f, 5, 0.75f);
+		parameter.shadowColor = new Color(0, 0.5f, 5f, 0.5f);
 		BitmapFont font24 = generator.generateFont(parameter); // font size 24 pixels
 		generator.dispose();
 
 		Label.LabelStyle labelStyle = new Label.LabelStyle();
 		labelStyle.font = font24;
-
 		Label Pixelfont = new Label("Summit Battle",labelStyle);
 		Pixelfont.setSize((float) Gdx.graphics.getWidth() /Help_Guides*5,row_height);
-		Pixelfont.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
+		Pixelfont.setPosition((float) 300,Gdx.graphics.getHeight()-100);
+		Pixelfont.setFontScale(2f);
 		stage.addActor(Pixelfont);
 
 		//Button
@@ -136,11 +131,10 @@ class main extends InputAdapter implements ApplicationListener {
 		Character.addListener(new InputListener() {
 			@Override
 			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				hover = true;
+
 			}
 			@Override
 			public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-				hover = false;
 
 
 			}
@@ -155,36 +149,30 @@ class main extends InputAdapter implements ApplicationListener {
 
 	}
 
-
-
-
-
-
-
-
 	@Override
 	public void resize(int width, int height) {
 
 	}
-
-	// @Override
-	//public void resize(int width, int height) {
-
-	//}
 	@Override
 	public void render () {
-		deltaTime = Gdx.graphics.getDeltaTime();
-		float delta = distance + (20*deltaTime);
-
 
 		Gdx.gl.glClearColor(255, 1, 1, 255);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		int speed = 100;
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.position.x -= speed * Gdx.graphics.getDeltaTime();
+
+
+		int speed = 50;
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT))  camera.position.x -= speed * Gdx.graphics.getDeltaTime();
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.position.x += speed * Gdx.graphics.getDeltaTime();
-		if (Gdx.input.isKeyPressed(Input.Keys.UP)) camera.position.y -= speed * Gdx.graphics.getDeltaTime();
-		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.position.y += speed * Gdx.graphics.getDeltaTime();
+		if (boundary_y_up) {
+			if (Gdx.input.isKeyPressed(Input.Keys.UP)) camera.position.y -= speed * Gdx.graphics.getDeltaTime();
+		}
+		if (boundary_y_down){
+			if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.position.y += speed * Gdx.graphics.getDeltaTime();
+		}
+		boundary_y_up = 1- background.getHeight()+210 <= camera.position.y;
+		boundary_y_down = background.getHeight()-210 >= camera.position.y;
+
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
@@ -209,21 +197,10 @@ class main extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void dispose() {
+		batch.dispose();
+		background.dispose();
+		stage.dispose();
 
 	}}
 
-	//@Override
-	//public void pause() {
-
-	//}
-
-	//@Override
-	//public void resume() {
-
-	//}
-
-	//@Override
-	//public void dispose() {
-
-	//}
 
