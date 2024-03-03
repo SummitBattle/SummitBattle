@@ -2,7 +2,7 @@ package com.mygdx.game;
 
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.GL20;
+    import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -57,7 +57,7 @@ class EndScreen extends ScreenAdapter {
         Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
         Button newBattleButton = new TextButton("Find a New Battle", mySkin);
         newBattleButton.setSize(col_width * 4, row_height);
-        newBattleButton.setPosition(10, Gdx.graphics.getHeight() - 200);
+        newBattleButton.setPosition(350, Gdx.graphics.getHeight() - 400);
         newBattleButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -65,7 +65,21 @@ class EndScreen extends ScreenAdapter {
             }
         });
         stage.addActor(newBattleButton);
+
+
+        Button Quit = new TextButton("Quit game", mySkin);
+        Quit.setSize(col_width * 4, row_height);
+        Quit.setPosition(350, Gdx.graphics.getHeight() - 500);
+        Quit.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+               Gdx.app.exit();
+            }
+        });
+            stage.addActor(Quit);
     }
+
+
 
     private void createParallaxLayers() {
         layers = new ParallaxLayer[8];
