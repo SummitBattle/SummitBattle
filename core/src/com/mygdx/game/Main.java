@@ -2,7 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
 
-public class main extends Game {
+public class Main extends Game {
 	private StartScreen startScreen;
 	private EndScreen endScreen;
 

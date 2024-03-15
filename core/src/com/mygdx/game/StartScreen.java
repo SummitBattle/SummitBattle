@@ -6,34 +6,29 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import javafx.scene.layout.Background;
 
 
 class StartScreen extends ScreenAdapter {
     private boolean boundary_y_up;
     private boolean boundary_y_down;
-    main game;
+    Main game;
     OrthographicCamera camera;
 
 
     private Stage stage;
 
     private boolean hover;
+    private boolean ready;
 
     Texture background;
 
@@ -42,7 +37,7 @@ class StartScreen extends ScreenAdapter {
 
     ParallaxLayer[] layers;
 
-    public StartScreen(main game) {
+    public StartScreen(Main game) {
         this.game = game;
     }
 
@@ -50,9 +45,9 @@ class StartScreen extends ScreenAdapter {
     public void show () {
         //Background
         stage = new Stage(new ScreenViewport());
-        int Help_Guides = 12;
-        int row_height = Gdx.graphics.getWidth() / 12;
-        int col_width = Gdx.graphics.getWidth() / 12;
+        int HELP_GUIDES = 12;
+        int ROW_HEIGHT = Gdx.graphics.getWidth() / 12;
+        int COL_WIDTH = Gdx.graphics.getWidth() / 12;
         Gdx.input.setInputProcessor(stage);
         background = new Texture((Gdx.files.internal("Background/sky.png")));
         batch = new SpriteBatch();
@@ -97,14 +92,14 @@ class StartScreen extends ScreenAdapter {
         labelStyle.font = font24;
 
         Label Pixelfont = new Label("Summit Battle",labelStyle);
-        Pixelfont.setSize((float) Gdx.graphics.getWidth() /Help_Guides*5,row_height);
+        Pixelfont.setSize((float) Gdx.graphics.getWidth() /HELP_GUIDES*5,ROW_HEIGHT);
         Pixelfont.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
         stage.addActor(Pixelfont);
 
         //Button
         Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
         Button FindBattle = new TextButton("Find a battle", mySkin);
-        FindBattle.setSize(col_width * 4, row_height);
+        FindBattle.setSize(COL_WIDTH * 4, ROW_HEIGHT);
         FindBattle.setPosition(10, Gdx.graphics.getHeight()-200);
         FindBattle.addListener(new ClickListener() {
 
@@ -122,13 +117,12 @@ class StartScreen extends ScreenAdapter {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.switchGameScreen();
-            }
-        });
+                ready = true;
+        }});
         stage.addActor(FindBattle);
 
         Button Settings = new TextButton("        Settings", mySkin);
-        Settings.setSize(col_width*2 , row_height);
+        Settings.setSize(COL_WIDTH*2 , ROW_HEIGHT);
         Settings.setPosition(10, Gdx.graphics.getHeight()-300);
 
         Settings.addListener(new InputListener() {
@@ -142,7 +136,7 @@ class StartScreen extends ScreenAdapter {
         stage.addActor(Settings);
 
         Button Character = new TextButton("         Change Character", mySkin);
-        Character.setSize(col_width * 4, row_height);
+        Character.setSize(COL_WIDTH * 4, ROW_HEIGHT);
         Character.setPosition(10, Gdx.graphics.getHeight()-400);
         Character.addListener(new InputListener() {
             @Override

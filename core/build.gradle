@@ -4,3 +4,15 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 eclipse.project.name = appName + "-core"
+
+allprojects {
+    repositories {
+        // ...
+        maven { url 'https://jitpack.io' }
+    }
+
+dependencies {
+    // Other dependencies...
+    // https://mvnrepository.com/artifact/com.github.crykn/kryone
+
+}}
