@@ -5,12 +5,14 @@ import com.badlogic.gdx.Game;
 public class Main extends Game {
 	private StartScreen startScreen;
 	private EndScreen endScreen;
+	private MainScreen mainScreen;
 
 	@Override
 	public void create() {
 		startScreen = new StartScreen(this);
 		endScreen = new EndScreen();
-		setScreen(startScreen);
+		mainScreen = new MainScreen();
+		setScreen(mainScreen);
 	}
 
 	public void switchGameScreen() {
