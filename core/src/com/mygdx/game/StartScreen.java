@@ -6,16 +6,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.awt.*;
 
 
 class StartScreen extends ScreenAdapter {
@@ -23,7 +27,9 @@ class StartScreen extends ScreenAdapter {
     private boolean boundary_y_down;
     Main game;
     OrthographicCamera camera;
-
+    Label hoverlabel;
+    private boolean False;
+    boolean labelDisplayed = False;
 
     private Stage stage;
 
@@ -32,10 +38,16 @@ class StartScreen extends ScreenAdapter {
 
     Texture background;
 
+    Animation<Sprite> animation;
+    float stateTime = 0;
+
 
     SpriteBatch batch;
 
     ParallaxLayer[] layers;
+
+    TextureAtlas textureAtlas;
+    int SelectCharacter = 1;
 
     public StartScreen(Main game) {
         this.game = game;
@@ -43,6 +55,16 @@ class StartScreen extends ScreenAdapter {
 
     @Override
     public void show () {
+
+
+        batch = new SpriteBatch();
+        //Spritesheet
+
+
+
+        textureAtlas = new TextureAtlas("Gungirl/gungirl.txt");
+        animation = new Animation<>(0.09f, textureAtlas.createSprites("Idle"), Animation.PlayMode.LOOP);
+
         //Background
         stage = new Stage(new ScreenViewport());
         int HELP_GUIDES = 12;
@@ -50,7 +72,8 @@ class StartScreen extends ScreenAdapter {
         int COL_WIDTH = Gdx.graphics.getWidth() / 12;
         Gdx.input.setInputProcessor(stage);
         background = new Texture((Gdx.files.internal("Background/sky.png")));
-        batch = new SpriteBatch();
+
+
         //Display
         camera = new OrthographicCamera(background.getWidth(), background.getHeight());
 
@@ -139,9 +162,13 @@ class StartScreen extends ScreenAdapter {
         Character.setSize(COL_WIDTH * 4, ROW_HEIGHT);
         Character.setPosition(10, Gdx.graphics.getHeight()-400);
         Character.addListener(new InputListener() {
+
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+
                 hover = true;
+
+
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -149,22 +176,18 @@ class StartScreen extends ScreenAdapter {
 
 
             }
+
+
         });
+
+
         stage.addActor(Character);
 
 
 
 
 
-
-
     }
-
-
-
-
-
-
 
 
     @Override
@@ -180,12 +203,20 @@ class StartScreen extends ScreenAdapter {
     public void render (float delta) {
 
 
-
-        Gdx.gl.glClearColor(255, 1, 1, 255);
+        ScreenUtils.clear(0.57f, 0.77f, 0.85f, 1);
+        Gdx.gl.glClearColor(255, 0, 0, 255);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (hover) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT))) {
+                SelectCharacter = (SelectCharacter == 1) ? 2 : 1;            }}
 
+
+
+
+        //Parallax Moving
 
         int speed = 50;
+        if (!hover) {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.position.x -= speed * Gdx.graphics.getDeltaTime();
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.position.x += speed * Gdx.graphics.getDeltaTime();
         if (boundary_y_up) {
@@ -193,9 +224,13 @@ class StartScreen extends ScreenAdapter {
         }
         if (boundary_y_down) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.position.y += speed * Gdx.graphics.getDeltaTime();
-        }
+        }}
         boundary_y_up = 1 - background.getHeight() + 210 <= camera.position.y;
         boundary_y_down = background.getHeight() - 210 >= camera.position.y;
+
+
+
+
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -203,9 +238,21 @@ class StartScreen extends ScreenAdapter {
         for (ParallaxLayer layer : layers) {
             layer.render(batch);
         }
+
+
+        stateTime += Gdx.graphics.getDeltaTime();
+        Sprite sprite = animation.getKeyFrame(stateTime, true);
+        sprite.setSize(20,20);
+        sprite.setPosition(-35,-70);
+        //Char Render
+        if (hover) {
+            sprite.draw(batch);
+
+        };
         batch.end();
         stage.act();
         stage.draw();
+
 
 
     }
@@ -222,7 +269,8 @@ class StartScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-
+        batch.dispose();
+        textureAtlas.dispose();
     }}
 
 //@Override

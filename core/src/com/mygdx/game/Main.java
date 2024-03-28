@@ -12,7 +12,7 @@ public class Main extends Game {
 		startScreen = new StartScreen(this);
 		endScreen = new EndScreen();
 		mainScreen = new MainScreen();
-		setScreen(mainScreen);
+		setScreen(startScreen);
 	}
 
 	public void switchGameScreen() {
