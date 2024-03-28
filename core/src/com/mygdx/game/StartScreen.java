@@ -114,6 +114,14 @@ class StartScreen extends ScreenAdapter {
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
 
+
+
+
+        Label hoverlabel = new Label(" ", labelStyle);
+
+        hoverlabel.setPosition(350,300);
+        stage.addActor(hoverlabel);
+
         Label Pixelfont = new Label("Summit Battle",labelStyle);
         Pixelfont.setSize((float) Gdx.graphics.getWidth() /HELP_GUIDES*5,ROW_HEIGHT);
         Pixelfont.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
@@ -167,12 +175,14 @@ class StartScreen extends ScreenAdapter {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
                 hover = true;
+                hoverlabel.setText("use <- or -> key");
 
 
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 hover = false;
+                hoverlabel.setText(" ");
 
 
             }
@@ -182,8 +192,6 @@ class StartScreen extends ScreenAdapter {
 
 
         stage.addActor(Character);
-
-
 
 
 
@@ -243,11 +251,10 @@ class StartScreen extends ScreenAdapter {
         stateTime += Gdx.graphics.getDeltaTime();
         Sprite sprite = animation.getKeyFrame(stateTime, true);
         sprite.setSize(20,20);
-        sprite.setPosition(-35,-70);
+        sprite.setPosition(-10,-70);
         //Char Render
         if (hover) {
             sprite.draw(batch);
-
         };
         batch.end();
         stage.act();
