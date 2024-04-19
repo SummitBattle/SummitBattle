@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.client;
 
 
 import com.badlogic.gdx.*;
@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.awt.*;
 
 
 class StartScreen extends ScreenAdapter {
@@ -149,6 +148,7 @@ class StartScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ready = true;
+                ClientHandler.Clienthandler();
         }});
         stage.addActor(FindBattle);
 

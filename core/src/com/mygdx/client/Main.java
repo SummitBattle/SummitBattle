@@ -1,10 +1,12 @@
-package com.mygdx.game;
+package com.mygdx.client;
 
 import com.badlogic.gdx.Game;
 
 public class Main extends Game {
 	private StartScreen startScreen;
 	private EndScreen endScreen;
+
+	private LoadScreen loadScreen;
 	private MainScreen mainScreen;
 
 	@Override
@@ -12,6 +14,7 @@ public class Main extends Game {
 		startScreen = new StartScreen(this);
 		endScreen = new EndScreen();
 		mainScreen = new MainScreen();
+		loadScreen = new LoadScreen();
 		setScreen(startScreen);
 	}
 

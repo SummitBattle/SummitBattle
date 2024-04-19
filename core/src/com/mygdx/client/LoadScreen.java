@@ -1,21 +1,23 @@
-package com.mygdx.game;
+package com.mygdx.client;
 
-
-import com.badlogic.gdx.*;
-    import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
-class EndScreen extends ScreenAdapter {
+
+
+class LoadScreen extends ScreenAdapter {
 
     private boolean boundary_y_up;
     private boolean boundary_y_down;
@@ -24,6 +26,9 @@ class EndScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private Texture background;
     private ParallaxLayer[] layers;
+
+    String LoadingName;
+    private int statetime;
 
     @Override
     public void show() {
@@ -49,35 +54,33 @@ class EndScreen extends ScreenAdapter {
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
-        Label titleLabel = new Label("Summit Battle", labelStyle);
-        titleLabel.setPosition(300, Gdx.graphics.getHeight() - 100);
-        titleLabel.setFontScale(2f);
-        stage.addActor(titleLabel);
+        LoadingName = "Finding match";
+        Label LoadingLabel = new Label(LoadingName, labelStyle);
+        LoadingLabel.setPosition(420,390);
+        stage.addActor(LoadingLabel);
 
-        // Button
-        Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
-        Button newBattleButton = new TextButton("Find a New Battle", mySkin);
-        newBattleButton.setSize(col_width * 4, row_height);
-        newBattleButton.setPosition(350, Gdx.graphics.getHeight() - 400);
-        newBattleButton.addListener(new ClickListener() {
+        LoadingLabel.addAction(new Action() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Add logic to switch to a new battle screen or handle the button click
+            public boolean act(float v) {
+                if (statetime >= 1500 ) {
+                    LoadingLabel.setText("Finding match.");
+                }
+
+                if (statetime >= 2300) {
+                    LoadingLabel.setText("Finding match..");
+                }
+                if (statetime >= 3100) {
+                    LoadingLabel.setText("Finding match...");
+                }
+                return false;
+
+
             }
         });
-        stage.addActor(newBattleButton);
 
 
-        Button Quit = new TextButton("Quit game", mySkin);
-        Quit.setSize(col_width * 4, row_height);
-        Quit.setPosition(350, Gdx.graphics.getHeight() - 500);
-        Quit.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-               Gdx.app.exit();
-            }
-        });
-            stage.addActor(Quit);
+
+        
     }
 
 
@@ -129,6 +132,20 @@ class EndScreen extends ScreenAdapter {
         batch.end();
         stage.act();
         stage.draw();
+
+
+
+        statetime += 10;
+        if (statetime >= 3500) {
+            statetime = 0;
+        }
+
+
+
+        System.out.println(statetime);
+
+
+
 
     }
 }

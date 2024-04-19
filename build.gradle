@@ -54,6 +54,7 @@ project(":core") {
     apply plugin: "java-library"
 
     dependencies {
+        implementation 'com.github.crykn:kryonet:2.22.9'
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
@@ -64,7 +65,7 @@ project(":server") {
     apply plugin: "java-library"
 
     dependencies {
-        implementation 'com.github.crykn:kryonet:2.22.8'
+        implementation 'com.github.crykn:kryonet:2.22.9'
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
