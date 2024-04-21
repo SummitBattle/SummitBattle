@@ -8,20 +8,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
-
 class StartScreen extends ScreenAdapter {
+    String PlayerName;
     private boolean boundary_y_up;
     private boolean boundary_y_down;
     Main game;
@@ -121,12 +119,17 @@ class StartScreen extends ScreenAdapter {
         hoverlabel.setPosition(350,300);
         stage.addActor(hoverlabel);
 
-        Label Pixelfont = new Label("Summit Battle",labelStyle);
-        Pixelfont.setSize((float) Gdx.graphics.getWidth() /HELP_GUIDES*5,ROW_HEIGHT);
-        Pixelfont.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
-        stage.addActor(Pixelfont);
+        Label Title = new Label("Summit Battle",labelStyle);
+        Title.setSize((float) Gdx.graphics.getWidth() /HELP_GUIDES*5,ROW_HEIGHT);
+        Title.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
+        stage.addActor(Title);
+
+
+
+
 
         //Button
+
         Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
         Button FindBattle = new TextButton("Find a battle", mySkin);
         FindBattle.setSize(COL_WIDTH * 4, ROW_HEIGHT);
@@ -148,9 +151,47 @@ class StartScreen extends ScreenAdapter {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ready = true;
-                ClientHandler.Clienthandler();
         }});
         stage.addActor(FindBattle);
+        PlayerName = "";
+
+        Label Name = new Label("Name:" + " " + PlayerName,labelStyle);
+        Name.setSize(5,5);
+        Name.setPosition(200,50);
+        stage.addActor(Name);
+
+        TextField textField = new TextField("Enter name", mySkin);
+        textField.setAlignment(Align.center);
+        textField.setSize(300, 40);
+        textField.setPosition(550, 550);
+        textField.setMaxLength(10);
+
+        TextButton confirmButton = new TextButton("Confirm", mySkin);
+        confirmButton.setSize(700, -200);
+        confirmButton.setPosition(350, 550);
+        confirmButton.addListener(new ClickListener() {
+                                      @Override
+                                      public void clicked(InputEvent event, float x, float y) {
+                                          PlayerName = textField.getText();
+                                          // Handle the input text here
+                                          Name.addAction(new Action() {
+                                              @Override
+                                              public boolean act(float v) {
+                                                  Name.setText("name:" +"             " + PlayerName);
+                                                  return false;
+                                              }
+                                          });
+                                      }
+
+                                  });
+        stage.addActor(textField);
+        stage.addActor(confirmButton);
+
+
+
+
+
+
 
         Button Settings = new TextButton("        Settings", mySkin);
         Settings.setSize(COL_WIDTH*2 , ROW_HEIGHT);
