@@ -10,17 +10,19 @@ public class Network {
     // This registers objects that are going to be sent over the network.
     static public void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
-        kryo.register(SomeRequest.class);
+        kryo.register(SendName.class);
         kryo.register(String[].class);
         kryo.register(SomeResponse.class);
     }
 
-    static public class SomeRequest {
-        public String text;
+    static public class SendName {
+        public static String name;
     }
 
     static public class SomeResponse {
-        public String text;
+        public static String text;
     }
+
+
 
 }

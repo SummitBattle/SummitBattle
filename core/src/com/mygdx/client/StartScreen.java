@@ -18,8 +18,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
-class StartScreen extends ScreenAdapter {
-    String PlayerName;
+class StartScreen extends ScreenAdapter  {
+    private String PlayerName;
     private boolean boundary_y_up;
     private boolean boundary_y_down;
     Main game;
@@ -50,7 +50,11 @@ class StartScreen extends ScreenAdapter {
         this.game = game;
     }
 
-    @Override
+
+
+
+
+@Override
     public void show () {
 
 
@@ -140,6 +144,9 @@ class StartScreen extends ScreenAdapter {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
+
+
+
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -150,17 +157,25 @@ class StartScreen extends ScreenAdapter {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ready = true;
+                ClientHandler.startClient();
+                ClientHandler.addListener();
+                ClientHandler.ReadyClient(PlayerName);
+
+
         }});
         stage.addActor(FindBattle);
-        PlayerName = "";
 
-        Label Name = new Label("Name:" + " " + PlayerName,labelStyle);
+
+
+
+
+
+        Label Name = new Label("Name:",labelStyle);
         Name.setSize(5,5);
         Name.setPosition(200,50);
         stage.addActor(Name);
 
-        TextField textField = new TextField("Enter name", mySkin);
+        TextField textField = new TextField("Enter Name", mySkin);
         textField.setAlignment(Align.center);
         textField.setSize(300, 40);
         textField.setPosition(550, 550);
@@ -173,17 +188,18 @@ class StartScreen extends ScreenAdapter {
                                       @Override
                                       public void clicked(InputEvent event, float x, float y) {
                                           PlayerName = textField.getText();
+
+
                                           // Handle the input text here
                                           Name.addAction(new Action() {
                                               @Override
                                               public boolean act(float v) {
-                                                  Name.setText("name:" +"             " + PlayerName);
+                                                  Name.setText("Name:" + "             " + PlayerName);
                                                   return false;
                                               }
                                           });
                                       }
-
-                                  });
+        });
         stage.addActor(textField);
         stage.addActor(confirmButton);
 
@@ -320,7 +336,6 @@ class StartScreen extends ScreenAdapter {
         batch.dispose();
         textureAtlas.dispose();
     }}
-
 //@Override
 //public void pause() {
 

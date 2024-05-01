@@ -78,6 +78,7 @@ class EndScreen extends ScreenAdapter {
             }
         });
             stage.addActor(Quit);
+
     }
 
 

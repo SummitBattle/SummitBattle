@@ -6,7 +6,7 @@ public class Main extends Game {
 	private StartScreen startScreen;
 	private EndScreen endScreen;
 
-	private LoadScreen loadScreen;
+	private static LoadScreen loadScreen;
 	private MainScreen mainScreen;
 
 	@Override
@@ -18,8 +18,8 @@ public class Main extends Game {
 		setScreen(startScreen);
 	}
 
-	public void switchGameScreen() {
-		setScreen(endScreen);
+	public void switchLoadScreen() {
+		setScreen(loadScreen);
 	}
 
 	@Override

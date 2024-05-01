@@ -80,7 +80,6 @@ class LoadScreen extends ScreenAdapter {
 
 
 
-        
     }
 
 
