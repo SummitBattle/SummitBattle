@@ -157,9 +157,11 @@ class StartScreen extends ScreenAdapter  {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ClientHandler.startClient();
-                ClientHandler.addListener();
-                ClientHandler.ReadyClient(PlayerName);
+                Log.set(Log.LEVEL_DEBUG);
+                new ClientHandler(PlayerName);
+                System.out.println("sending name:" + PlayerName);
+
+
 
 
         }});
@@ -188,7 +190,6 @@ class StartScreen extends ScreenAdapter  {
                                       @Override
                                       public void clicked(InputEvent event, float x, float y) {
                                           PlayerName = textField.getText();
-
 
                                           // Handle the input text here
                                           Name.addAction(new Action() {

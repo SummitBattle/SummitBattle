@@ -16,7 +16,7 @@ public class Network {
     }
 
     static public class SendName {
-        public static String name;
+        public String name;
     }
 
     static public class SomeResponse {
