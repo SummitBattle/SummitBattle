@@ -45,6 +45,7 @@ class StartScreen extends ScreenAdapter  {
 
     TextureAtlas textureAtlas;
     int SelectCharacter = 1;
+    IdleAnimation idleAnimation;
 
     public StartScreen(Main game) {
         this.game = game;
@@ -56,15 +57,15 @@ class StartScreen extends ScreenAdapter  {
 
 @Override
     public void show () {
+        idleAnimation = new IdleAnimation();
+        idleAnimation.create();
+
 
 
         batch = new SpriteBatch();
         //Spritesheet
 
 
-
-        textureAtlas = new TextureAtlas("Gungirl/gungirl.txt");
-        animation = new Animation<>(0.09f, textureAtlas.createSprites("Idle"), Animation.PlayMode.LOOP);
 
         //Background
         stage = new Stage(new ScreenViewport());
@@ -160,6 +161,8 @@ class StartScreen extends ScreenAdapter  {
                 Log.set(Log.LEVEL_DEBUG);
                 new ClientHandler(PlayerName);
                 System.out.println("sending name:" + PlayerName);
+                game.switchToLoadScreen();
+
 
 
 
@@ -235,12 +238,24 @@ class StartScreen extends ScreenAdapter  {
                 hover = true;
                 hoverlabel.setText("use <- or -> key");
 
+                Character.addAction(new Action(){
+
+                                        @Override
+                                        public boolean act(float v) {
+                                            idleAnimation.render(50,50,stateTime);
+                                            return false;
+                                        }
+                                    }
+
+                );
+
 
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 hover = false;
                 hoverlabel.setText(" ");
+                Character.clearActions();
 
 
             }
@@ -299,6 +314,7 @@ class StartScreen extends ScreenAdapter  {
 
 
         camera.update();
+        stateTime += Gdx.graphics.getDeltaTime();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         for (ParallaxLayer layer : layers) {
@@ -306,14 +322,6 @@ class StartScreen extends ScreenAdapter  {
         }
 
 
-        stateTime += Gdx.graphics.getDeltaTime();
-        Sprite sprite = animation.getKeyFrame(stateTime, true);
-        sprite.setSize(20,20);
-        sprite.setPosition(-10,-70);
-        //Char Render
-        if (hover) {
-            sprite.draw(batch);
-        };
         batch.end();
         stage.act();
         stage.draw();

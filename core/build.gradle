@@ -13,6 +13,8 @@ allprojects {
 
 dependencies {
     implementation project (":server")
+
+
     // Other dependencies...
     // https://mvnrepository.com/artifact/com.github.crykn/kryone
 

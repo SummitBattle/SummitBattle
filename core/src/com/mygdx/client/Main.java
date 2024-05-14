@@ -8,19 +8,23 @@ public class Main extends Game {
 
 	private static LoadScreen loadScreen;
 	private MainScreen mainScreen;
-
 	@Override
 	public void create() {
+
 		startScreen = new StartScreen(this);
 		endScreen = new EndScreen();
 		mainScreen = new MainScreen();
 		loadScreen = new LoadScreen();
-		setScreen(startScreen);
+		setScreen(mainScreen);
 	}
 
-	public void switchLoadScreen() {
-		setScreen(loadScreen);
-	}
+	public void switchToLoadScreen() {setScreen(loadScreen);}
+
+	public void switchToEndScreen() {setScreen(endScreen);}
+
+	public void switchToMainScreen() {setScreen(mainScreen);}
+
+	public void switchToStartScreen() {setScreen(startScreen);}
 
 	@Override
 	public void resize(int width, int height) {

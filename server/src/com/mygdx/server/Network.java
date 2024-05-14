@@ -23,6 +23,13 @@ public class Network {
         public static String text;
     }
 
+    static public class MoveCharacter {
+        public int x,y;
+    }
+    static public class UpdateCharacterg {
+        public int id,x,y;
+    }
+
 
 
 }
