@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.codeandweb.physicseditor.PhysicsShapeCache;
 import com.badlogic.gdx.physics.box2d.Body;
 
+import java.io.IOException;
 
 
 class GameWorld extends ApplicationAdapter  {
@@ -74,8 +75,9 @@ class GameWorld extends ApplicationAdapter  {
 
         Gdx.input.setInputProcessor(stage);
         background = new Texture((Gdx.files.internal("Arena/BG.png")));
+        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         textureAtlas = new TextureAtlas("Arena/arenaAtlas.txt");
-        ArenaSprite = textureAtlas.createSprite("ArenaSprite");
+        ArenaSprite = textureAtlas.createSprite("arena");
         ArenaBody = physicsBodies.createBody("arenaBody", world,1,1);
 
         // lowPlatform = new Texture((Gdx.files.internal("Arena/downplat.png")));
@@ -103,13 +105,20 @@ class GameWorld extends ApplicationAdapter  {
     public void render() {
         Gdx.gl.glClearColor(255, 1, 1, 255);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        debugRenderer.render(world, camera.combined);
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(background, 0, 0, 1000, 800);
+        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        try {
        ArenaSprite.draw(batch);
+    } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
 
         batch.end();
+        debugRenderer.render(world, camera.combined);
 
         //update world BOX2D
 
