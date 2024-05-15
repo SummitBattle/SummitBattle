@@ -62,6 +62,7 @@ class StartScreen extends ScreenAdapter  {
 
 
 
+
         batch = new SpriteBatch();
         //Spritesheet
 
@@ -243,6 +244,7 @@ class StartScreen extends ScreenAdapter  {
                                         @Override
                                         public boolean act(float v) {
                                             idleAnimation.render(50,50,stateTime);
+
                                             return false;
                                         }
                                     }

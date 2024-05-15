@@ -65,7 +65,7 @@ class GameWorld extends ApplicationAdapter  {
         world = new World(new Vector2(0,0), true);
         debugRenderer = new Box2DDebugRenderer();
 
-        Gdx.input.setInputProcessor(stage);
+
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(1000,800,camera);
@@ -73,7 +73,7 @@ class GameWorld extends ApplicationAdapter  {
 
         //Background
 
-        Gdx.input.setInputProcessor(stage);
+
         background = new Texture((Gdx.files.internal("Arena/BG.png")));
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         textureAtlas = new TextureAtlas("Arena/arenaAtlas.txt");
@@ -103,7 +103,7 @@ class GameWorld extends ApplicationAdapter  {
     //}
     @Override
     public void render() {
-        Gdx.gl.glClearColor(255, 1, 1, 255);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
