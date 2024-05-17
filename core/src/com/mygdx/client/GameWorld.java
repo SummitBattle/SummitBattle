@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -20,6 +21,7 @@ public class GameWorld extends ApplicationAdapter {
     private static final float STEP_TIME = 1f / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
+
 
     private Viewport viewport;
     private OrthographicCamera camera;
@@ -44,7 +46,7 @@ public class GameWorld extends ApplicationAdapter {
 
         // Set up the camera and viewport
         camera = new OrthographicCamera(1200, 1000);
-        viewport = new FitViewport(1200, 1000 , camera);
+        viewport = new ExtendViewport(1200, 1000 , camera);
         stage = new Stage(viewport);
 
         viewport_x = camera.viewportWidth;
@@ -64,8 +66,43 @@ public class GameWorld extends ApplicationAdapter {
         // Create the player
         player = new Player(world);
 
-        // Create arena
-        createRect(0, 0, world, viewport_x,100);
+        // Create Arenabodies
+        //Woodbox
+        createRect(650,82,world,28,26);
+
+        //Low Ground
+        createRect(0, 0, world, viewport_x,48);
+
+        //High ground
+        createRect(355,150,world,46,18);
+        createRect(952,145,world,46,18);
+
+        //Lowmidplat form
+        createRect(133,346,world,48,18);
+        createRect(1129,346,world,47,18);
+
+        // Midplat form
+        createRect(290,535,world,205,16);
+        createRect(1005,535,world,185,16);
+
+        //Highmidplat form
+        createRect(648,690,world,92,16);
+
+
+        //Lowtop platform
+        createRect(365,820,world,72,21);
+        createRect(955,820,world,72,21);
+
+
+        //Hightop platform
+        createRect(652,980,world,45,18);
+
+
+
+        //World boundaries
+
+        createRect(0,0,world,1,2500);
+        createRect(viewport_x,0,world,1,2500);
     }
 
     @Override
@@ -85,21 +122,21 @@ public class GameWorld extends ApplicationAdapter {
 
     @Override
     public void render() {
-        stateTime += Gdx.graphics.getDeltaTime()*0.5;
+        stateTime += Gdx.graphics.getDeltaTime()*0.9;
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Render the background and arena
-        batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined.scl(1/PPM));
         batch.begin();
-       // batch.draw(background, 0, 0, viewport_x+400,viewport_y);
+        batch.draw(background, 0, 0, viewport_x+400,viewport_y);
         batch.draw(arena, 0, 0, viewport_x,viewport_y);
         player.render(stateTime, camera);
         batch.end();
 
         // Update the world
         update();
-        debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, camera.combined.scl(PPM));
     }
 
     @Override
@@ -119,12 +156,12 @@ public class GameWorld extends ApplicationAdapter {
         Body body;
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
-        def.position.set(x,y);
+        def.position.set(x/PPM,y/PPM);
         def.fixedRotation = true;
         body = world.createBody(def);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width/PPM, height/2/PPM);
+        shape.setAsBox(width/PPM, height/PPM);
         body.createFixture(shape, 1.0f);
         shape.dispose();
         return body;

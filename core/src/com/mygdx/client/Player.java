@@ -36,16 +36,16 @@ public class Player {
         // Box2D body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(400 / PPM, 500 / PPM);
+        bodyDef.position.set(50/ PPM, 20 / PPM);
         playerBody = world.createBody(bodyDef);
 
         // Fixture and Shape
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(widthMeters / 2, heightMeters / 2);
+        shape.setAsBox(widthMeters / 3.2f, heightMeters / 3);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        fixtureDef.friction = 0.4f;
+        fixtureDef.density = 2.25f;
+        fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0f;
         playerBody.setFixedRotation(true);
         playerBody.createFixture(fixtureDef);
