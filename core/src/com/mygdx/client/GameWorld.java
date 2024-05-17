@@ -2,7 +2,7 @@ package com.mygdx.client;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,18 +14,18 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.codeandweb.physicseditor.PhysicsShapeCache;
 import com.badlogic.gdx.physics.box2d.Body;
 
-import java.io.IOException;
-
 
 class GameWorld extends ApplicationAdapter  {
-    Viewport viewport = new FitViewport(1000,800);
+    Viewport viewport;
 
     OrthographicCamera camera;
+    Player player;
 
 
 
@@ -53,22 +53,26 @@ class GameWorld extends ApplicationAdapter  {
     TextureAtlas textureAtlas;
     Sprite ArenaSprite;
     Body ArenaBody;
+    float stateTime;
 
 
 
 
     @Override
     public void create() {
+
+
+
         //Initializers for BOX2D
         Box2D.init();
         physicsBodies = new PhysicsShapeCache("Arena/arena.xml");
-        world = new World(new Vector2(0,0), true);
+        world = new World(new Vector2(0,0f), true);
         debugRenderer = new Box2DDebugRenderer();
 
 
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(1000,800,camera);
+        viewport = new FitViewport(50,50,camera);
         stage = new Stage(viewport);
 
         //Background
@@ -80,8 +84,14 @@ class GameWorld extends ApplicationAdapter  {
         ArenaSprite = textureAtlas.createSprite("arena");
         ArenaBody = physicsBodies.createBody("arenaBody", world,1,1);
 
+
+
         // lowPlatform = new Texture((Gdx.files.internal("Arena/downplat.png")));
         batch = new SpriteBatch();
+
+
+        //new Player
+        player = new Player(world);
 
 
 
@@ -103,28 +113,40 @@ class GameWorld extends ApplicationAdapter  {
     //}
     @Override
     public void render() {
+        stateTime += Gdx.graphics.getDeltaTime();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        try {
-       ArenaSprite.draw(batch);
-    } catch (Exception e) {
-            e.printStackTrace();
 
-        }
+       ArenaSprite.draw(batch);
+       player.render(stateTime);
+
+
+
 
 
         batch.end();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            player.jump();
+            System.out.println("Jumped");
+
+        }
         debugRenderer.render(world, camera.combined);
 
         //update world BOX2D
 
         stepWorld();
 
-    }}
+    }
+
+
+public World world() {
+        return world;
+}}
 
 
 

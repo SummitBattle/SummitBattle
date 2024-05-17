@@ -23,6 +23,9 @@ public class ShootAnimation extends ApplicationAdapter {
 
     }
 
+    public Animation getshoot() {
+        return ShootAnim;
+    }
 
     public void render(int x, int y, float stateTime) {
 

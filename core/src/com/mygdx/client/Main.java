@@ -15,7 +15,7 @@ public class Main extends Game {
 		endScreen = new EndScreen();
 		mainScreen = new MainScreen();
 		loadScreen = new LoadScreen();
-		setScreen(startScreen);
+		setScreen(mainScreen);
 	}
 
 	public void switchToLoadScreen() {setScreen(loadScreen);}

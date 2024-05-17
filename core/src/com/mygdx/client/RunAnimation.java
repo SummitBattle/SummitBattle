@@ -27,6 +27,9 @@ public class RunAnimation extends ApplicationAdapter {
 
     }
 
+    public Animation getrun() {
+        return RunAnim;
+    }
     public void render(int x, int y, float stateTime) {
 
         RunSprite = RunAnim.getKeyFrame(stateTime, true);
