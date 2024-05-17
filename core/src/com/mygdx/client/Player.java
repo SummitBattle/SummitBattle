@@ -1,5 +1,7 @@
 package com.mygdx.client;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,13 +10,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
-import java.util.Vector;
-
 public class Player {
-    private float x;
-    private float y;
-    private float xSpeed;
-    private float ySpeed;
+    private static final float PPM = 100.0f;
+    private float widthMeters = 1.0f;
+    private float heightMeters = 1.0f;
+    private float widthPixels = widthMeters * PPM;
+    private float heightPixels = heightMeters * PPM;
+
     private RunAnimation playerRun;
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> runAnimation;
@@ -23,38 +25,31 @@ public class Player {
     private ShootAnimation playerShoot;
     private Animation<TextureRegion> currentAnimation;
     private int playerHP;
-    Vector2 pos;
-
     private SpriteBatch spriteBatch;
     private Sprite sprite;
-    private Body PlayerBody;
+    private Body playerBody;
+    private float horizontalForce;
+
+    boolean prev_flipped = true;
 
     public Player(World world) {
-
-        //Box2D body definition
+        // Box2D body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        x = 100;
-        y = 50;
-        bodyDef.position.set(x,y);
-        PlayerBody = world.createBody(bodyDef);
+        bodyDef.position.set(400 / PPM, 500 / PPM);
+        playerBody = world.createBody(bodyDef);
 
-        pos = this.PlayerBody.getPosition();
-
-
-
-        //Fixture and Shape
-
+        // Fixture and Shape
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.8f, 0.8f);
+        shape.setAsBox(widthMeters / 2, heightMeters / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.5f;
+        fixtureDef.density = 1f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0f;
-        PlayerBody.createFixture(fixtureDef);
+        playerBody.setFixedRotation(true);
+        playerBody.createFixture(fixtureDef);
         shape.dispose();
-
 
         spriteBatch = new SpriteBatch();
         sprite = new Sprite();
@@ -76,51 +71,90 @@ public class Player {
         currentAnimation = idleAnimation;
 
 
+        sprite.setSize(-widthPixels,heightPixels);
     }
 
 
 
+    public void update() {
+        if (playerBody.getLinearVelocity().x == 0) {
+            currentAnimation = idleAnimation;
+
+        }
 
 
-    public void run() {
-        currentAnimation = runAnimation;
+        horizontalForce = 0;
+
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            horizontalForce -= 1;
+            currentAnimation = runAnimation;
+            prev_flipped = sprite.isFlipX();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            horizontalForce += 1;
+            currentAnimation = runAnimation;
+            prev_flipped = sprite.isFlipX();
+
+
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.W) && playerBody.getLinearVelocity().y == 0) {
+            this.playerBody.applyForceToCenter(0, 400, false);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+            currentAnimation = shootAnimation;
+            horizontalForce = horizontalForce / 2;
+        }
+        this.playerBody.setLinearVelocity(horizontalForce * 5, playerBody.getLinearVelocity().y);
+        System.out.println(playerBody.getLinearVelocity().x);
 
     }
 
-    public void jump() {
 
-        this.PlayerBody.applyLinearImpulse(0f,2f,pos.x,pos.y,true);
-
-
-    }
-
-    public void shoot() {
-        currentAnimation = shootAnimation;
-    }
 
     public void hit() {
         playerHP--;
     }
 
-    public void render(float stateTime) {
-        pos = this.PlayerBody.getPosition();
-
-
-
-
-
+    public void render(float stateTime, Camera camera) {
+        Vector2 pos = playerBody.getPosition();
+        spriteBatch.setProjectionMatrix(camera.combined);
 
         // Get the current frame of the animation
         TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+        sprite.setRegion(currentFrame);
 
-        // Set the position of the sprite
-        sprite.setPosition(x,y);
+        // Set the sprite's size to match the Box2D body size in pixels
+
+        if (Gdx.input.isKeyPressed(Input.Keys.D) ) {
+            sprite.setSize(-widthPixels,heightPixels);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            sprite.setSize(widthPixels, heightPixels);
+        }
+
+        // Set the sprite's position based on the Box2D body's position
+        sprite.setPosition(pos.x * PPM - (sprite.getWidth() / 2), pos.y * PPM - (sprite.getHeight() / 2));
+
+
+        // Set the sprite's texture region to the current animation frame
+
+
+
+        // Mirror Animation
+
+
+
+
+
+
 
         // Begin the SpriteBatch
         spriteBatch.begin();
 
-        // Draw the current frame of the animation
-        spriteBatch.draw(currentFrame, pos.x,pos.y);
+        // Draw the sprite
+        sprite.draw(spriteBatch);
 
         // End the SpriteBatch
         spriteBatch.end();

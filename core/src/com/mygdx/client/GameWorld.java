@@ -10,91 +10,67 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.codeandweb.physicseditor.PhysicsShapeCache;
-import com.badlogic.gdx.physics.box2d.Body;
 
+public class GameWorld extends ApplicationAdapter {
+    private static final float PPM = 100.0f;
+    private static final float STEP_TIME = 1f / 60f;
+    private static final int VELOCITY_ITERATIONS = 6;
+    private static final int POSITION_ITERATIONS = 2;
 
-class GameWorld extends ApplicationAdapter  {
-    Viewport viewport;
-
-    OrthographicCamera camera;
-    Player player;
-
-
-
-
+    private Viewport viewport;
+    private OrthographicCamera camera;
+    private Player player;
+    private Texture arena;
     private Stage stage;
-
-
-    Texture background;
-
-
-
-
-
-    SpriteBatch batch;
-
-
-
-    World world;
-    Box2DDebugRenderer debugRenderer;
-    static final float STEP_TIME = 1f / 60f;
-    static final int VELOCITY_ITERATIONS = 6;
-    static final int POSITION_ITERATIONS = 2;
-    float accumulator = 0;
-    PhysicsShapeCache physicsBodies;
-    TextureAtlas textureAtlas;
-    Sprite ArenaSprite;
-    Body ArenaBody;
-    float stateTime;
-
-
-
+    private Texture background;
+    private SpriteBatch batch;
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
+    private float accumulator = 0;
+    private float stateTime;
+    float viewport_y;
+    float viewport_x;
 
     @Override
     public void create() {
-
-
-
-        //Initializers for BOX2D
+        // Initialize Box2D
         Box2D.init();
-        physicsBodies = new PhysicsShapeCache("Arena/arena.xml");
-        world = new World(new Vector2(0,0f), true);
+        world = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
 
-
-
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(50,50,camera);
+        // Set up the camera and viewport
+        camera = new OrthographicCamera(1200, 1000);
+        viewport = new FitViewport(1200, 1000 , camera);
         stage = new Stage(viewport);
 
-        //Background
+        viewport_x = camera.viewportWidth;
+        viewport_y = camera.viewportHeight;
+        System.out.println(viewport_x);
 
-
-        background = new Texture((Gdx.files.internal("Arena/BG.png")));
+        // Load background texture
+        background = new Texture(Gdx.files.internal("Arena/BG.png"));
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        textureAtlas = new TextureAtlas("Arena/arenaAtlas.txt");
-        ArenaSprite = textureAtlas.createSprite("arena");
-        ArenaBody = physicsBodies.createBody("arenaBody", world,1,1);
 
+        // Load arena texture
+        arena = new Texture(Gdx.files.internal("Arena/arenaAtlas.png"));
 
-
-        // lowPlatform = new Texture((Gdx.files.internal("Arena/downplat.png")));
+        // Initialize the sprite batch
         batch = new SpriteBatch();
 
-
-        //new Player
+        // Create the player
         player = new Player(world);
 
+        // Create arena
+        createRect(0, 0, world, viewport_x,100);
+    }
 
-
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
     }
 
     private void stepWorld() {
@@ -104,50 +80,53 @@ class GameWorld extends ApplicationAdapter  {
         if (accumulator >= STEP_TIME) {
             accumulator -= STEP_TIME;
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-        }}
+        }
+    }
 
-
-    // @Override
-    //public void resize(int width, int height) {
-
-    //}
     @Override
     public void render() {
-        stateTime += Gdx.graphics.getDeltaTime();
+        stateTime += Gdx.graphics.getDeltaTime()*0.5;
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Render the background and arena
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-       ArenaSprite.draw(batch);
-       player.render(stateTime);
-
-
-
-
-
+       // batch.draw(background, 0, 0, viewport_x+400,viewport_y);
+        batch.draw(arena, 0, 0, viewport_x,viewport_y);
+        player.render(stateTime, camera);
         batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            player.jump();
-            System.out.println("Jumped");
-
-        }
+        // Update the world
+        update();
         debugRenderer.render(world, camera.combined);
-
-        //update world BOX2D
-
-        stepWorld();
-
     }
 
+    @Override
+    public void dispose() {
+        world.dispose();
+        batch.dispose();
+        debugRenderer.dispose();
+    }
 
-public World world() {
-        return world;
-}}
+    public void update() {
+        stepWorld();
+        player.update();
+        camera.update();
+    }
 
+    public Body createRect(float x, float y, World world, float width, float height) {
+        Body body;
+        BodyDef def = new BodyDef();
+        def.type = BodyDef.BodyType.StaticBody;
+        def.position.set(x,y);
+        def.fixedRotation = true;
+        body = world.createBody(def);
 
-
-
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width/PPM, height/2/PPM);
+        body.createFixture(shape, 1.0f);
+        shape.dispose();
+        return body;
+    }
+}
