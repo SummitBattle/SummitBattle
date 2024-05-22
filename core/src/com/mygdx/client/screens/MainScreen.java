@@ -1,12 +1,11 @@
-package com.mygdx.client;
+package com.mygdx.client.screens;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.physics.box2d.World;
+import com.mygdx.client.game.GameWorld;
 
 
-class MainScreen extends ScreenAdapter {
+public class MainScreen extends ScreenAdapter {
 
 
     GameWorld gameworld;

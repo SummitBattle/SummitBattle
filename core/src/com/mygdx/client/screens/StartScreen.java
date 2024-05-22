@@ -1,4 +1,4 @@
-package com.mygdx.client;
+package com.mygdx.client.screens;
 
 
 import com.badlogic.gdx.*;
@@ -16,9 +16,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.client.ClientHandler;
+import com.mygdx.client.Log;
+import com.mygdx.client.Main;
+import com.mygdx.client.animations.IdleAnimation;
 
 
-class StartScreen extends ScreenAdapter  {
+public class StartScreen extends ScreenAdapter  {
     private String PlayerName;
     private boolean boundary_y_up;
     private boolean boundary_y_down;
@@ -58,7 +62,7 @@ class StartScreen extends ScreenAdapter  {
 @Override
     public void show () {
         idleAnimation = new IdleAnimation();
-        idleAnimation.create();
+
 
 
 

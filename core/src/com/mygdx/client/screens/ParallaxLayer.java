@@ -1,4 +1,4 @@
-package com.mygdx.client;
+package com.mygdx.client.screens;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;

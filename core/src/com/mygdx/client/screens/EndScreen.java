@@ -1,4 +1,4 @@
-package com.mygdx.client;
+package com.mygdx.client.screens;
 
 
 import com.badlogic.gdx.*;
@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
-class EndScreen extends ScreenAdapter {
+public class EndScreen extends ScreenAdapter {
 
     private boolean boundary_y_up;
     private boolean boundary_y_down;

@@ -1,23 +1,20 @@
-package com.mygdx.client;
+package com.mygdx.client.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class GameWorld extends ApplicationAdapter {
-    private static final float PPM = 100.0f;
+    public static final float PPM = 100.0f;
     private static final float STEP_TIME = 1f / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
@@ -36,6 +33,7 @@ public class GameWorld extends ApplicationAdapter {
     private float stateTime;
     float viewport_y;
     float viewport_x;
+    ListenerClass listenerClass;
     String type;
     private Fixture fixtureB;
     private Fixture fixtureA;
@@ -43,6 +41,7 @@ public class GameWorld extends ApplicationAdapter {
     float platform_y;
     ContactListener ListenerClass;
     Body body;
+    Array<Body> deletionList;
 
 
 
@@ -53,8 +52,13 @@ public class GameWorld extends ApplicationAdapter {
         // Initialize Box2D
         Box2D.init();
         world = new World(new Vector2(0, -18f), true);
+        listenerClass = new ListenerClass();
 
-        world.setContactListener(new ListenerClass());
+        world.setContactListener(listenerClass);
+
+
+
+
 
 
         debugRenderer = new Box2DDebugRenderer();
@@ -80,6 +84,8 @@ public class GameWorld extends ApplicationAdapter {
 
         // Create the player
         player = new Player(world);
+        //world
+
 
 
         // Create Arenabodies
@@ -166,8 +172,12 @@ public class GameWorld extends ApplicationAdapter {
 
     public void update() {
         stepWorld();
-        player.update();
+        player.update(stateTime);
         camera.update();
+        for (Body body : listenerClass.getDeletionList()) {
+            world.destroyBody(body);
+        }
+        listenerClass.getDeletionList().clear();
     }
 
     public Body createRect(float x, float y, World world, float width, float height, boolean boundary) {

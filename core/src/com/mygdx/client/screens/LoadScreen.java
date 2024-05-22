@@ -1,4 +1,4 @@
-package com.mygdx.client;
+package com.mygdx.client.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,9 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
-
-
-class LoadScreen extends ScreenAdapter {
+public class LoadScreen extends ScreenAdapter {
 
     private boolean boundary_y_up;
     private boolean boundary_y_down;
