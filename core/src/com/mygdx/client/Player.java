@@ -41,15 +41,16 @@ public class Player {
 
         // Fixture and Shape
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(widthMeters / 3.2f, heightMeters / 3);
+        shape.setAsBox(widthMeters / 4f, heightMeters / 3);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 2.25f;
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0f;
         playerBody.setFixedRotation(true);
-        playerBody.createFixture(fixtureDef);
+        playerBody.createFixture(fixtureDef).setUserData("player");
         shape.dispose();
+
 
         spriteBatch = new SpriteBatch();
         sprite = new Sprite();
@@ -99,6 +100,8 @@ public class Player {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) && playerBody.getLinearVelocity().y == 0) {
+            this.playerBody.setAwake(true);
+
             this.playerBody.applyForceToCenter(0, 400, false);
         }
 
@@ -107,7 +110,7 @@ public class Player {
             horizontalForce = horizontalForce / 2;
         }
         this.playerBody.setLinearVelocity(horizontalForce * 5, playerBody.getLinearVelocity().y);
-        System.out.println(playerBody.getLinearVelocity().x);
+
 
     }
 

@@ -36,12 +36,27 @@ public class GameWorld extends ApplicationAdapter {
     private float stateTime;
     float viewport_y;
     float viewport_x;
+    String type;
+    private Fixture fixtureB;
+    private Fixture fixtureA;
+    float ball_y;
+    float platform_y;
+    ContactListener ListenerClass;
+    Body body;
+
+
+
+
 
     @Override
     public void create() {
         // Initialize Box2D
         Box2D.init();
-        world = new World(new Vector2(0, -9.8f), true);
+        world = new World(new Vector2(0, -18f), true);
+
+        world.setContactListener(new ListenerClass());
+
+
         debugRenderer = new Box2DDebugRenderer();
 
         // Set up the camera and viewport
@@ -51,7 +66,7 @@ public class GameWorld extends ApplicationAdapter {
 
         viewport_x = camera.viewportWidth;
         viewport_y = camera.viewportHeight;
-        System.out.println(viewport_x);
+
 
         // Load background texture
         background = new Texture(Gdx.files.internal("Arena/BG.png"));
@@ -66,43 +81,46 @@ public class GameWorld extends ApplicationAdapter {
         // Create the player
         player = new Player(world);
 
+
         // Create Arenabodies
         //Woodbox
-        createRect(650,82,world,28,26);
+        createRect(650,82,world,28,26,true);
+
 
         //Low Ground
-        createRect(0, 0, world, viewport_x,48);
+        createRect(0, 0, world, viewport_x,48,true);
 
         //High ground
-        createRect(355,150,world,46,18);
-        createRect(952,145,world,46,18);
+        createRect(355,150,world,46,18,false);
+        createRect(952,145,world,46,18,false);
 
         //Lowmidplat form
-        createRect(133,346,world,48,18);
-        createRect(1129,346,world,47,18);
+        createRect(133,346,world,48,18,false);
+        createRect(1129,346,world,47,18,false);
 
         // Midplat form
-        createRect(290,535,world,205,16);
-        createRect(1005,535,world,185,16);
+        createRect(290,535,world,205,16,false);
+        createRect(1005,535,world,185,16,false);
 
         //Highmidplat form
-        createRect(648,690,world,92,16);
+        createRect(648,690,world,92,16,false);
 
 
         //Lowtop platform
-        createRect(365,820,world,72,21);
-        createRect(955,820,world,72,21);
+        createRect(365,820,world,72,21,false);
+        createRect(955,820,world,72,21,false);
 
 
         //Hightop platform
-        createRect(652,980,world,45,18);
+        createRect(652,980,world,45,18,false);
 
 
 
         //World boundaries
 
-        createRect(0,0,world,1,2500);
-        createRect(viewport_x,0,world,1,2500);
+        createRect(0,0,world,1,2500,true);
+
+        createRect(viewport_x,0,world,1,2500,true);
     }
 
     @Override
@@ -152,18 +170,40 @@ public class GameWorld extends ApplicationAdapter {
         camera.update();
     }
 
-    public Body createRect(float x, float y, World world, float width, float height) {
-        Body body;
+    public Body createRect(float x, float y, World world, float width, float height, boolean boundary) {
+
         BodyDef def = new BodyDef();
         def.type = BodyDef.BodyType.StaticBody;
         def.position.set(x/PPM,y/PPM);
+
         def.fixedRotation = true;
-        body = world.createBody(def);
+        this.body = world.createBody(def);
+
+
+
+
+
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width/PPM, height/PPM);
-        body.createFixture(shape, 1.0f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        if (!boundary) {
+
+            this.body.createFixture(fixtureDef).setUserData("platform");
+
+        } else {
+            this.body.createFixture(fixtureDef).setUserData("boundary");
+
+
+
+        }
         shape.dispose();
+
         return body;
     }
+
+
+
 }
