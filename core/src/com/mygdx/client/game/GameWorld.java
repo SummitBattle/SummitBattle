@@ -168,6 +168,8 @@ public class GameWorld extends ApplicationAdapter {
         world.dispose();
         batch.dispose();
         debugRenderer.dispose();
+        background.dispose();
+        arena.dispose();
     }
 
     public void update() {

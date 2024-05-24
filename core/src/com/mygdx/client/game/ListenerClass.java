@@ -4,10 +4,11 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
 public class ListenerClass implements ContactListener {
-    Array<Body> deletionList = new Array<>();
+    private final Array<Body> deletionList = new Array<>();
 
     @Override
     public void beginContact(Contact contact) {
+        // No specific logic for when contact begins
     }
 
     @Override
@@ -19,16 +20,24 @@ public class ListenerClass implements ContactListener {
     public void preSolve(Contact contact, Manifold manifold) {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
+        String userDataA = (String) fixtureA.getUserData();
+        String userDataB = (String) fixtureB.getUserData();
+
+        if (userDataA == null || userDataB == null) {
+            return;
+        }
 
         // Check if one of the fixtures is the player and the other is the platform
-        if (("player".equals(fixtureA.getUserData()) && "platform".equals(fixtureB.getUserData())) ||
-                ("platform".equals(fixtureA.getUserData()) && "player".equals(fixtureB.getUserData()))) {
+        boolean isPlayerAndPlatform =
+                ("player".equals(userDataA) && "platform".equals(userDataB)) ||
+                        ("platform".equals(userDataA) && "player".equals(userDataB));
 
-            // Get the position of the player and the platform
-            float playerY = "player".equals(fixtureA.getUserData()) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
-            float platformY = "platform".equals(fixtureA.getUserData()) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
+        if (isPlayerAndPlatform) {
+            float playerY = "player".equals(userDataA) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
+            float platformY = "platform".equals(userDataA) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
 
-            if (platformY + 20f / 100 > playerY) {
+            // Check if the player is below the platform
+            if (playerY < platformY + 0.2f) {  // Adjusted to 0.2 to be more clear (20f / 100)
                 contact.setEnabled(false);
             } else {
                 contact.setEnabled(true);
@@ -36,9 +45,9 @@ public class ListenerClass implements ContactListener {
         }
 
         // Check if a bullet hits the boundary
-        if ("bullet".equals(fixtureA.getUserData())) {
+        if ("bullet".equals(userDataA) && "boundary".equals(userDataB)) {
             deletionList.add(fixtureA.getBody());
-        } else if  ("bullet".equals(fixtureB.getUserData())) {
+        } else if ("bullet".equals(userDataB) && "boundary".equals(userDataA)) {
             deletionList.add(fixtureB.getBody());
         }
     }

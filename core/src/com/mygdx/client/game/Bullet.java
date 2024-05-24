@@ -10,18 +10,21 @@ import static com.mygdx.client.game.GameWorld.PPM;
 
 public class Bullet {
     private Body body;
-    private TextureAtlas textureAtlas;
+    private static TextureAtlas textureAtlas;  // Load once for all bullets
     private Sprite bulletSprite;
     private World bulletWorld;
-    Vector2 old_position;
-    Vector2 position;
-    boolean dead;
+    private Vector2 oldPosition;
+    private boolean dead;
+
+    // Static block to load the texture atlas once
+    static {
+        textureAtlas = new TextureAtlas("Bullet/bullets.txt");
+    }
 
     public Bullet(World world) {
-        textureAtlas = new TextureAtlas("Bullet/bullets.txt");
         bulletSprite = textureAtlas.createSprite("green_bullet");
         bulletWorld = world;
-        old_position = new Vector2(0,0);
+        oldPosition = new Vector2();
     }
 
     public Body createBullet(float x, float y, boolean spriteFlipped) {
@@ -29,12 +32,7 @@ public class Bullet {
         def.type = BodyDef.BodyType.DynamicBody;
         def.fixedRotation = true;
 
-        def.position.set(x, y);
-        if (spriteFlipped) {
-            def.position.set(x - 0.5f, y);
-        } else {
-            def.position.set(x + 0.5f, y);
-        }
+        def.position.set(x + (spriteFlipped ? -0.5f : 0.5f), y);
 
         this.body = bulletWorld.createBody(def);
 
@@ -47,50 +45,29 @@ public class Bullet {
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
 
-        Vector2 velocity = this.body.getLinearVelocity();
-        if (spriteFlipped) {
-            velocity.x = -20;
-        } else {
-            velocity.x = 20;
-        }
-        this.body.setLinearVelocity(velocity);
         this.body.createFixture(fixtureDef).setUserData("bullet");
 
         this.body.setGravityScale(0f);
 
         shape.dispose();
 
-        return body;
+        this.body.setLinearVelocity(spriteFlipped ? -20 : 20, 0);
 
+        return body;
     }
 
     public void render(Batch batch) {
         Vector2 position = body.getPosition();
 
-        float distanceSquared = old_position.dst2(position); // Squared distance
-        float minDistanceSquared = 0.0001f * 0.0001f; // Adjust this threshold as needed
-
-        boolean moved = distanceSquared > minDistanceSquared;
-
-        if (moved) {
+        if (oldPosition.dst2(position) > 0.00000001f) {  // Use precomputed squared distance
             bulletSprite.setPosition((position.x * PPM) - (bulletSprite.getWidth() / 2), (position.y * PPM) - (bulletSprite.getHeight() / 2));
             bulletSprite.draw(batch);
+            oldPosition.set(position); // Update old position only if moved
         }
-
-        old_position.set(position); // Update old position for the next frame
-
-
-
-
-
-
-
-
     }
 
     public boolean isOffScreen(float screenWidth) {
-        return body.getPosition().x * PPM < 0 || body.getPosition().x * PPM > screenWidth;
+        float posX = body.getPosition().x * PPM;
+        return posX < 0 || posX > screenWidth;
     }
-
-
 }

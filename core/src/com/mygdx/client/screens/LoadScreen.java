@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-
 public class LoadScreen extends ScreenAdapter {
 
     private boolean boundary_y_up;
@@ -25,16 +24,14 @@ public class LoadScreen extends ScreenAdapter {
     private Texture background;
     private ParallaxLayer[] layers;
 
-    String LoadingName;
-    private int statetime;
+    private String loadingName;
+    private float stateTime;
 
     @Override
     public void show() {
         stage = new Stage(new ScreenViewport());
-        int Help_Guides = 12;
-        int row_height = Gdx.graphics.getWidth() / 12;
-        int col_width = Gdx.graphics.getWidth() / 12;
         Gdx.input.setInputProcessor(stage);
+
         background = new Texture(Gdx.files.internal("Background/sky.png"));
         batch = new SpriteBatch();
 
@@ -46,40 +43,33 @@ public class LoadScreen extends ScreenAdapter {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixelfont.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 24;
-        // Set other font parameters...
         BitmapFont font24 = generator.generateFont(parameter);
         generator.dispose();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font24;
-        LoadingName = "Finding match";
-        Label LoadingLabel = new Label(LoadingName, labelStyle);
-        LoadingLabel.setPosition(420,390);
-        stage.addActor(LoadingLabel);
+        loadingName = "Finding match";
+        Label loadingLabel = new Label(loadingName, labelStyle);
+        loadingLabel.setPosition(420, 390);
+        stage.addActor(loadingLabel);
 
-        LoadingLabel.addAction(new Action() {
+        loadingLabel.addAction(new Action() {
             @Override
-            public boolean act(float v) {
-                if (statetime >= 1500 ) {
-                    LoadingLabel.setText("Finding match.");
-                }
-
-                if (statetime >= 2300) {
-                    LoadingLabel.setText("Finding match..");
-                }
-                if (statetime >= 3100) {
-                    LoadingLabel.setText("Finding match...");
+            public boolean act(float delta) {
+                stateTime += delta * 1000; // Increase state time by milliseconds
+                if (stateTime >= 1500 && stateTime < 2300) {
+                    loadingLabel.setText("Finding match.");
+                } else if (stateTime >= 2300 && stateTime < 3100) {
+                    loadingLabel.setText("Finding match..");
+                } else if (stateTime >= 3100 && stateTime < 3500) {
+                    loadingLabel.setText("Finding match...");
+                } else if (stateTime >= 3500) {
+                    stateTime = 0;
                 }
                 return false;
-
-
             }
         });
-
-
-
     }
-
 
     private void createParallaxLayers() {
         layers = new ParallaxLayer[8];
@@ -107,16 +97,12 @@ public class LoadScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(255, 1, 1, 255);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
         int speed = 50;
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.position.x -= speed * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.position.x += speed * Gdx.graphics.getDeltaTime();
-        if (boundary_y_up) {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) camera.position.y -= speed * Gdx.graphics.getDeltaTime();
-        }
-        if (boundary_y_down) {
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.position.y += speed * Gdx.graphics.getDeltaTime();
-        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) camera.position.x -= speed * delta;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) camera.position.x += speed * delta;
+        if (boundary_y_up && Gdx.input.isKeyPressed(Input.Keys.UP)) camera.position.y -= speed * delta;
+        if (boundary_y_down && Gdx.input.isKeyPressed(Input.Keys.DOWN)) camera.position.y += speed * delta;
+
         boundary_y_up = 1 - background.getHeight() + 210 <= camera.position.y;
         boundary_y_down = background.getHeight() - 210 >= camera.position.y;
 
@@ -127,22 +113,15 @@ public class LoadScreen extends ScreenAdapter {
             layer.render(batch);
         }
         batch.end();
-        stage.act();
+        stage.act(delta);
         stage.draw();
+    }
 
-
-
-        statetime += 10;
-        if (statetime >= 3500) {
-            statetime = 0;
-        }
-
-
-
-        System.out.println(statetime);
-
-
-
+    @Override
+    public void dispose() {
+        stage.dispose();
+        batch.dispose();
+        background.dispose();
 
     }
 }

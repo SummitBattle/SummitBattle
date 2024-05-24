@@ -1,17 +1,14 @@
 package com.mygdx.server;
 
-import java.util.ArrayList;
-import java.util.List;
+class ConnectedClient {
+    private final String ipAddress;
+    private final String name;
+    private final int id;
 
-public class ConnectedClient {
-    private String ipAddress;
-    private String name;
-    private int ID;
-
-    public ConnectedClient(String ipAddress, String name, int ID) {
+    public ConnectedClient(String ipAddress, String name, int id) {
         this.ipAddress = ipAddress;
         this.name = name;
-        this.ID = ID;
+        this.id = id;
     }
 
     public String getIpAddress() {
@@ -21,8 +18,8 @@ public class ConnectedClient {
     public String getName() {
         return name;
     }
+
     public int getID() {
-        return ID;
+        return id;
     }
 }
-

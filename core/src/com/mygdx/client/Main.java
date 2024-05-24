@@ -9,12 +9,11 @@ import com.mygdx.client.screens.StartScreen;
 public class Main extends Game {
 	private StartScreen startScreen;
 	private EndScreen endScreen;
-
-	private static LoadScreen loadScreen;
+	private LoadScreen loadScreen;
 	private MainScreen mainScreen;
+
 	@Override
 	public void create() {
-
 		startScreen = new StartScreen(this);
 		endScreen = new EndScreen();
 		mainScreen = new MainScreen();
@@ -22,32 +21,20 @@ public class Main extends Game {
 		setScreen(mainScreen);
 	}
 
-	public void switchToLoadScreen() {setScreen(loadScreen);}
-
-	public void switchToEndScreen() {setScreen(endScreen);}
-
-	public void switchToMainScreen() {setScreen(mainScreen);}
-
-	public void switchToStartScreen() {setScreen(startScreen);}
-
-	@Override
-	public void resize(int width, int height) {
-		super.resize(width, height);
+	public void switchToLoadScreen() {
+		setScreen(loadScreen);
 	}
 
-	@Override
-	public void render() {
-		super.render();
+	public void switchToEndScreen() {
+		setScreen(endScreen);
 	}
 
-	@Override
-	public void pause() {
-		super.pause();
+	public void switchToMainScreen() {
+		setScreen(mainScreen);
 	}
 
-	@Override
-	public void resume() {
-		super.resume();
+	public void switchToStartScreen() {
+		setScreen(startScreen);
 	}
 
 	@Override
@@ -55,5 +42,7 @@ public class Main extends Game {
 		super.dispose();
 		startScreen.dispose();
 		endScreen.dispose();
+		mainScreen.dispose();
+		loadScreen.dispose();
 	}
 }
