@@ -16,9 +16,9 @@ public class Main extends Game {
 	public void create() {
 		startScreen = new StartScreen(this);
 		endScreen = new EndScreen();
-		mainScreen = new MainScreen();
-		loadScreen = new LoadScreen();
-		setScreen(mainScreen);
+
+		setScreen(startScreen);
+
 	}
 
 	public void switchToLoadScreen() {
@@ -32,6 +32,7 @@ public class Main extends Game {
 	public void switchToMainScreen() {
 		setScreen(mainScreen);
 	}
+
 
 	public void switchToStartScreen() {
 		setScreen(startScreen);

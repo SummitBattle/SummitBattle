@@ -12,12 +12,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.common.ConnectedClient;
 
 public class GameWorld extends ApplicationAdapter {
     public static final float PPM = 100.0f;
     private static final float STEP_TIME = 1f / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
+    ConnectedClient player1;
+    ConnectedClient player2;
 
 
     private Viewport viewport;
@@ -42,6 +45,12 @@ public class GameWorld extends ApplicationAdapter {
     ContactListener ListenerClass;
     Body body;
     Array<Body> deletionList;
+    String Playernumber;
+    public GameWorld(ConnectedClient player1, ConnectedClient player2, String Playernumber) {
+        this.player1 = player1;
+        this.player2 = player2;
+        this.Playernumber = Playernumber;
+    }
 
 
 

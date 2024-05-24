@@ -3,8 +3,12 @@ package com.mygdx.client;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.mygdx.server.Network;
-import com.mygdx.server.Network.SendName;
+import com.mygdx.common.Network;
+import com.mygdx.common.Network.SendName;
+import com.mygdx.common.ConnectedClient;
+import com.mygdx.common.Network.NotifyMessage;
+import com.mygdx.common.Network.PlayerNumberReq;
+import com.mygdx.common.Network.PlayerNumberSend;
 
 import java.io.IOException;
 
@@ -12,12 +16,25 @@ public class ClientHandler {
     private static final int TIMEOUT = 5000;
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5000; // Updated to match server port
+    public static ConnectedClientsCallback ConnectedClientsCallback;
 
     private Client client;
     private String clientName;
+    ConnectedClient connectedClient1;
 
-    public ClientHandler(String playerName) {
+
+
+    String PlayerNumber;
+    boolean isReady = false;
+    ConnectedClientsCallback callback;
+
+
+
+    ConnectedClient connectedClient2;
+
+    public ClientHandler(String playerName, ConnectedClientsCallback CALLBACK) {
         this.clientName = playerName;
+        this.callback = CALLBACK;
 
         // Initialize the client
         client = new Client();
@@ -32,6 +49,9 @@ public class ClientHandler {
                 System.out.println("Sending name: " + sendName.name);
 
                 client.sendTCP(sendName);
+
+
+
             }
 
             @Override
@@ -39,9 +59,25 @@ public class ClientHandler {
                 System.out.println("Disconnected from the server.");
             }
 
-            @Override
-            public void received(Connection connection, Object object) {
-                // Handle received objects if needed
+                @Override
+                public void received(Connection connection, Object object) {
+                    if (object instanceof NotifyMessage) {
+                        connectedClient1 = ((NotifyMessage) object).connectedClient1;
+                        connectedClient2 = ((NotifyMessage)object).connectedClient2;
+                        isReady = ((NotifyMessage)object).isReady;
+
+
+
+                        PlayerNumberReq playerNumberReq = new PlayerNumberReq();
+                        System.out.println("Sending PlayerNumberReq");
+                        client.sendTCP(playerNumberReq);
+
+                }
+                if (object instanceof PlayerNumberSend) {
+                    PlayerNumber = ((PlayerNumberSend)object).Playernumber;
+                    if (callback != null) callback.onConnectedClientsReceived(connectedClient1, connectedClient2, isReady, PlayerNumber);
+                }
+
             }
         });
 
@@ -63,19 +99,25 @@ public class ClientHandler {
         return client;
     }
 
+    public ConnectedClient getConnectedClient1() { return connectedClient1;}
+    public ConnectedClient getConnectedClient2() {
+        return connectedClient2;
+    }
+
     public String getClientName() {
         return clientName;
     }
-
-    public static void main(String[] args) {
-        if (args.length < 1) {
-            System.err.println("Usage: java ClientHandler <playerName>");
-            return;
-        }
-        String playerName = args[0];
-        ClientHandler clientHandler = new ClientHandler(playerName);
-
-        // To keep the client running, add a shutdown hook to stop it on exit
-        Runtime.getRuntime().addShutdownHook(new Thread(clientHandler::stop));
+    public String getPlayerNumber() {
+        return PlayerNumber;
     }
-}
+    public boolean getIsReady() {
+        return isReady;
+    }
+    public interface ConnectedClientsCallback {
+        void onConnectedClientsReceived(ConnectedClient client1, ConnectedClient client2, boolean isReady, String PlayerNumber);
+    }}
+
+
+
+
+

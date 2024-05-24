@@ -1,5 +1,5 @@
 
-package com.mygdx.server;
+package com.mygdx.common;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -13,6 +13,9 @@ public class Network {
         kryo.register(SendName.class);
         kryo.register(String[].class);
         kryo.register(SomeResponse.class);
+        kryo.register(NotifyMessage.class);
+        kryo.register(PlayerNumberReq.class);
+        kryo.register(PlayerNumberSend.class);
     }
 
     static public class SendName {
@@ -20,7 +23,7 @@ public class Network {
     }
 
     static public class SomeResponse {
-        public static String text;
+        public String text;
     }
 
     static public class MoveCharacter {
@@ -28,6 +31,18 @@ public class Network {
     }
     static public class UpdateCharacterg {
         public int id,x,y;
+    }
+    static public class NotifyMessage {
+        public ConnectedClient connectedClient1;
+        public ConnectedClient connectedClient2;
+        public boolean isReady;
+    }
+
+    static public class PlayerNumberReq {
+    }
+
+    static public class PlayerNumberSend {
+        public String Playernumber;
     }
 
 

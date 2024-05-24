@@ -1,8 +1,6 @@
 package com.mygdx.client.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,9 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.client.ClientHandler;
+import com.mygdx.common.ConnectedClient;
 
-public class LoadScreen extends ScreenAdapter {
 
+public class LoadScreen implements Screen, ClientHandler.ConnectedClientsCallback {
+
+    private final Game game;
     private boolean boundary_y_up;
     private boolean boundary_y_down;
     private Stage stage;
@@ -26,6 +28,14 @@ public class LoadScreen extends ScreenAdapter {
 
     private String loadingName;
     private float stateTime;
+    ClientHandler clientHandler;
+    MainScreen mainscreen;
+
+
+    public LoadScreen(ClientHandler clientHandler, Game game) {
+        this.clientHandler = clientHandler;
+        this.game = game;
+    }
 
     @Override
     public void show() {
@@ -93,7 +103,23 @@ public class LoadScreen extends ScreenAdapter {
     }
 
     @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
     public void render(float delta) {
+
         Gdx.gl.glClearColor(255, 1, 1, 255);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -115,6 +141,8 @@ public class LoadScreen extends ScreenAdapter {
         batch.end();
         stage.act(delta);
         stage.draw();
+
+
     }
 
     @Override
@@ -122,6 +150,17 @@ public class LoadScreen extends ScreenAdapter {
         stage.dispose();
         batch.dispose();
         background.dispose();
+
+    }
+
+
+
+    @Override
+    public void onConnectedClientsReceived(ConnectedClient client1, ConnectedClient client2, boolean isReady, String PlayerNumber) {
+        if (isReady) {
+            mainscreen = new MainScreen(client1,client2,PlayerNumber);
+            game.setScreen(mainscreen);
+        }
 
     }
 }

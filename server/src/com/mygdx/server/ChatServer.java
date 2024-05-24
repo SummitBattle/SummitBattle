@@ -3,17 +3,25 @@ package com.mygdx.server;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-import com.mygdx.server.Network.*;
+
+
+import com.mygdx.common.Network;
+import com.mygdx.common.Network.SendName;
+import com.mygdx.common.Network.PlayerNumberSend;
+import com.mygdx.common.ConnectedClient;
+import com.mygdx.common.Network.PlayerNumberReq;
+
+
 
 public class ChatServer {
     private Server server;
     private ConnectedClientsManager clientsManager = new ConnectedClientsManager();
+    int ClientID;
 
     public ChatServer() throws IOException {
         server = new Server();
@@ -48,16 +56,30 @@ public class ChatServer {
 
                     InetSocketAddress address = connection.getRemoteAddressTCP();
                     String ipAddress = address.getAddress().getHostAddress();
-                    int clientID = connection.getID();
+                    ClientID = connection.getID();
 
-                    System.out.println("Received name '" + clientName + "' from client at IP: " + ipAddress + " with ID: " + clientID);
-                    clientsManager.addConnectedClient(ipAddress, clientName, clientID);
+                    System.out.println("Received name '" + clientName + "' from client at IP: " + ipAddress + " with ID: " + ClientID);
+                    clientsManager.addConnectedClient(ipAddress, clientName, ClientID);
 
-                    List<ConnectedClient> connectedClients = clientsManager.getConnectedClients();
+                    List<ConnectedClient> ConnectedClients = clientsManager.getConnectedClients();
                     System.out.println("Connected Clients:");
-                    for (ConnectedClient client : connectedClients) {
+                    for (ConnectedClient client : ConnectedClients) {
                         System.out.println("IP: " + client.getIpAddress() + ", Name: " + client.getName() + ", ID: " + client.getID());
                     }
+
+
+
+
+
+                }
+                if (object instanceof PlayerNumberReq) {
+                    PlayerNumberSend playerNumberSend = new PlayerNumberSend();
+                    if ( ClientID % 2 == 1) {
+                        playerNumberSend.Playernumber = "Player 1";
+                    } else if (ClientID % 2 == 0) {
+                        playerNumberSend.Playernumber = "Player 2";
+                    }
+                    server.sendToTCP(connection.getID(), playerNumberSend);
                 }
             }
         });

@@ -1,6 +1,6 @@
-package com.mygdx.server;
+package com.mygdx.common;
 
-class ConnectedClient {
+public class ConnectedClient {
     private final String ipAddress;
     private final String name;
     private final int id;
