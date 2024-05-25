@@ -16,7 +16,7 @@ public class ClientHandler {
     private static final int TIMEOUT = 5000;
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5000; // Updated to match server port
-    public static ConnectedClientsCallback ConnectedClientsCallback;
+
 
     private Client client;
     private String clientName;
@@ -26,15 +26,13 @@ public class ClientHandler {
 
     String PlayerNumber;
     boolean isReady = false;
-    ConnectedClientsCallback callback;
 
 
 
     ConnectedClient connectedClient2;
 
-    public ClientHandler(String playerName, ConnectedClientsCallback CALLBACK) {
+    public ClientHandler(String playerName) {
         this.clientName = playerName;
-        this.callback = CALLBACK;
 
         // Initialize the client
         client = new Client();
@@ -75,7 +73,10 @@ public class ClientHandler {
                 }
                 if (object instanceof PlayerNumberSend) {
                     PlayerNumber = ((PlayerNumberSend)object).Playernumber;
-                    if (callback != null) callback.onConnectedClientsReceived(connectedClient1, connectedClient2, isReady, PlayerNumber);
+                    System.out.println("RECEIVED MY PLAYERNUMBER: PLAYERNUMBER IS: " + PlayerNumber +  "WITH INFO: " + connectedClient1.getName() +connectedClient2.getName() + isReady + PlayerNumber);
+
+                    System.out.println("DOING CALLBACK");
+
                 }
 
             }
@@ -112,10 +113,10 @@ public class ClientHandler {
     }
     public boolean getIsReady() {
         return isReady;
-    }
-    public interface ConnectedClientsCallback {
-        void onConnectedClientsReceived(ConnectedClient client1, ConnectedClient client2, boolean isReady, String PlayerNumber);
     }}
+
+
+
 
 
 

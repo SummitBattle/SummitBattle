@@ -1,10 +1,14 @@
 package com.mygdx.common;
 
 public class ConnectedClient {
-    private final String ipAddress;
-    private final String name;
-    private final int id;
+    private String ipAddress;
+    private String name;
+    private int id;
 
+    // No-argument constructor
+    public ConnectedClient() {}
+
+    // Parameterized constructor
     public ConnectedClient(String ipAddress, String name, int id) {
         this.ipAddress = ipAddress;
         this.name = name;

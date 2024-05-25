@@ -15,7 +15,7 @@ import com.mygdx.client.ClientHandler;
 import com.mygdx.common.ConnectedClient;
 
 
-public class LoadScreen implements Screen, ClientHandler.ConnectedClientsCallback {
+public class LoadScreen implements Screen {
 
     private final Game game;
     private boolean boundary_y_up;
@@ -32,9 +32,11 @@ public class LoadScreen implements Screen, ClientHandler.ConnectedClientsCallbac
     MainScreen mainscreen;
 
 
+
     public LoadScreen(ClientHandler clientHandler, Game game) {
         this.clientHandler = clientHandler;
         this.game = game;
+
     }
 
     @Override
@@ -138,6 +140,16 @@ public class LoadScreen implements Screen, ClientHandler.ConnectedClientsCallbac
         for (ParallaxLayer layer : layers) {
             layer.render(batch);
         }
+
+        ConnectedClient c1 = clientHandler.getConnectedClient1();
+        ConnectedClient c2 = clientHandler.getConnectedClient2();
+        String PLayernumber = clientHandler.getPlayerNumber();
+
+        if (clientHandler.getIsReady()){
+            System.out.println("READY AND CHANGING SCREEN");
+            mainscreen = new MainScreen(c1,c2,PLayernumber);
+            game.setScreen(mainscreen);
+        }
         batch.end();
         stage.act(delta);
         stage.draw();
@@ -151,16 +163,4 @@ public class LoadScreen implements Screen, ClientHandler.ConnectedClientsCallbac
         batch.dispose();
         background.dispose();
 
-    }
-
-
-
-    @Override
-    public void onConnectedClientsReceived(ConnectedClient client1, ConnectedClient client2, boolean isReady, String PlayerNumber) {
-        if (isReady) {
-            mainscreen = new MainScreen(client1,client2,PlayerNumber);
-            game.setScreen(mainscreen);
-        }
-
-    }
-}
+    }}

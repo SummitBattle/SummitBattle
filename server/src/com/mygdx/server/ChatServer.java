@@ -33,7 +33,7 @@ public class ChatServer {
             @Override
             public void connected(Connection connection) {
                 System.out.println("Client connected: " + connection.getID());
-                matchmakingManager.Matchmaking(clientsManager.getConnectedClients(),clientsManager,server);
+
             }
 
             @Override
@@ -68,6 +68,7 @@ public class ChatServer {
                     for (ConnectedClient client : ConnectedClients) {
                         System.out.println("IP: " + client.getIpAddress() + ", Name: " + client.getName() + ", ID: " + client.getID());
                     }
+                    matchmakingManager.Matchmaking(clientsManager.getConnectedClients(),clientsManager,server);
 
 
 

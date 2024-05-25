@@ -6,7 +6,7 @@ import com.mygdx.client.screens.LoadScreen;
 import com.mygdx.client.screens.MainScreen;
 import com.mygdx.client.screens.StartScreen;
 
-public class Main extends Game {
+public class Main extends Game{
 	private StartScreen startScreen;
 	private EndScreen endScreen;
 	private LoadScreen loadScreen;

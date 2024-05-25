@@ -4,6 +4,7 @@ package com.mygdx.common;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
+
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
 
@@ -16,6 +17,7 @@ public class Network {
         kryo.register(NotifyMessage.class);
         kryo.register(PlayerNumberReq.class);
         kryo.register(PlayerNumberSend.class);
+        kryo.register(ConnectedClient.class);
     }
 
     static public class SendName {
@@ -44,6 +46,8 @@ public class Network {
     static public class PlayerNumberSend {
         public String Playernumber;
     }
+
+
 
 
 

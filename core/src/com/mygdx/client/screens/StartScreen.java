@@ -164,7 +164,7 @@ public class StartScreen extends ScreenAdapter  {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Log.set(Log.LEVEL_DEBUG);
-                ClientHandler clienthandler = new ClientHandler(PlayerName, ClientHandler.ConnectedClientsCallback);
+                ClientHandler clienthandler = new ClientHandler(PlayerName);
                 System.out.println("sending name:" + PlayerName);
                 LoadScreen loadScreen = new LoadScreen(clienthandler,game);
                 game.setScreen(loadScreen);
