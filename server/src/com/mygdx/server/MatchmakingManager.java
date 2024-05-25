@@ -9,7 +9,7 @@ import com.mygdx.common.Network.NotifyMessage;
 
 public class MatchmakingManager {
 
-    public void MatchmakingManager(List connectedClients, ConnectedClientsManager connectedClientsManager, Server server) {
+    public void Matchmaking(List connectedClients, ConnectedClientsManager connectedClientsManager, Server server) {
 
         if (connectedClients.size() >= 2) {
             // Match players in pairs (1 and 2, 3 and 4, ...)

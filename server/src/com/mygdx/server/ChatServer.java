@@ -26,12 +26,14 @@ public class ChatServer {
     public ChatServer() throws IOException {
         server = new Server();
         Network.register(server);
+        MatchmakingManager matchmakingManager = new MatchmakingManager();
 
         // Add a listener to handle incoming connections and messages
         server.addListener(new Listener() {
             @Override
             public void connected(Connection connection) {
                 System.out.println("Client connected: " + connection.getID());
+                matchmakingManager.Matchmaking(clientsManager.getConnectedClients(),clientsManager,server);
             }
 
             @Override
