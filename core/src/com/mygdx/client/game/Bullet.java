@@ -16,6 +16,7 @@ public class Bullet {
     private Vector2 oldPosition;
     private boolean dead;
 
+
     // Static block to load the texture atlas once
     static {
         textureAtlas = new TextureAtlas("Bullet/bullets.txt");

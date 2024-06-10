@@ -13,8 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.client.animations.IdleAnimation;
 import com.mygdx.client.animations.RunAnimation;
 import com.mygdx.client.animations.ShootAnimation;
-
-import java.util.Iterator;
+import com.mygdx.common.ConnectedClient;
 
 public class Player {
     private static final float PPM = 100.0f;
@@ -41,16 +40,18 @@ public class Player {
     private World world;
     private float cooldown;
     private Vector2 position;
+    private boolean isLocalPlayer;
 
-    public Player(World world) {
+    public Player(World world, ConnectedClient client, boolean isLocalPlayer, Vector2 initialPosition) {
         this.world = world;
+        this.isLocalPlayer = isLocalPlayer;
         bullets = new Array<>();
         cooldown = 0; // Initialize cooldown to zero
 
         // Box2D body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(50 / PPM, 20 / PPM);
+        bodyDef.position.set(initialPosition);
         playerBody = world.createBody(bodyDef);
 
         // Fixture and Shape
@@ -83,6 +84,17 @@ public class Player {
     }
 
     public void update(float stateTime) {
+        if (isLocalPlayer) {
+            handleInput(stateTime);
+        }
+        updatePosition(stateTime);
+
+        if (cooldown > 0) {
+            cooldown -= Gdx.graphics.getDeltaTime();
+        }
+    }
+
+    private void handleInput(float stateTime) {
         if (playerBody.getLinearVelocity().x == 0 && currentAnimation.isAnimationFinished(stateTime)) {
             currentAnimation = idleAnimation;
         }
@@ -108,9 +120,7 @@ public class Player {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && cooldown <= 0) {
-            if (currentAnimation.isAnimationFinished(stateTime)) {
-                currentAnimation = shootAnimation;
-            }
+            currentAnimation = shootAnimation;
             horizontalForce /= 5;
             Bullet bullet = new Bullet(world);
             bullet.createBullet(playerBody.getPosition().x, playerBody.getPosition().y, sprite.getWidth() > 0);
@@ -119,11 +129,17 @@ public class Player {
         }
 
         playerBody.setLinearVelocity(horizontalForce * HORIZONTAL_SPEED, playerBody.getLinearVelocity().y);
+    }
 
-        if (cooldown > 0) {
-            cooldown -= Gdx.graphics.getDeltaTime(); // Decrease cooldown over time
+    private void updatePosition(float stateTime) {
+        position = playerBody.getPosition();
+        if (playerBody.getLinearVelocity().x == 0 && currentAnimation.isAnimationFinished(stateTime)) {
+            currentAnimation = idleAnimation;
         }
     }
+
+
+
 
     public void render(float stateTime, Camera camera) {
         position = playerBody.getPosition();
@@ -134,10 +150,10 @@ public class Player {
         sprite.setRegion(currentFrame);
 
         // Set the sprite's size and flip based on direction
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.D) && isLocalPlayer) {
             sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.A) && isLocalPlayer) {
             sprite.setSize(PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
         }
 

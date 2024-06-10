@@ -44,10 +44,20 @@ public class ListenerClass implements ContactListener {
             }
         }
 
-        // Check if a bullet hits the boundary
-        if ("bullet".equals(userDataA) && "boundary".equals(userDataB)) {
+
+
+
+        // Check if a bullet hits the boundary or platform
+        if (
+                "bullet".equals(userDataA) && "boundary".equals(userDataB) ||
+                "bullet".equals(userDataA) && "platform".equals(userDataB)
+        ) {
             deletionList.add(fixtureA.getBody());
-        } else if ("bullet".equals(userDataB) && "boundary".equals(userDataA)) {
+        } else if (
+                "bullet".equals(userDataB) && "boundary".equals(userDataA) ||
+                "bullet".equals(userDataB) && "platform".equals(userDataA)
+
+        ) {
             deletionList.add(fixtureB.getBody());
         }
     }

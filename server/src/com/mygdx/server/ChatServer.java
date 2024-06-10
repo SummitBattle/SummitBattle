@@ -77,9 +77,9 @@ public class ChatServer {
                 }
                 if (object instanceof PlayerNumberReq) {
                     PlayerNumberSend playerNumberSend = new PlayerNumberSend();
-                    if ( ClientID % 2 == 1) {
+                    if ( connection.getID() % 2 == 1) {
                         playerNumberSend.Playernumber = "Player 1";
-                    } else if (ClientID % 2 == 0) {
+                    } else if (connection.getID() % 2 == 0) {
                         playerNumberSend.Playernumber = "Player 2";
                     }
                     server.sendToTCP(connection.getID(), playerNumberSend);
