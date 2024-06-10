@@ -19,9 +19,9 @@ public class Player {
     private static final float PPM = 100.0f;
     private static final float PLAYER_WIDTH_METERS = 1.0f;
     private static final float PLAYER_HEIGHT_METERS = 1.0f;
-    private static final float PLAYER_WIDTH_PIXELS = PLAYER_WIDTH_METERS * PPM;
+    private static float PLAYER_WIDTH_PIXELS = PLAYER_WIDTH_METERS * PPM;
     private static final float PLAYER_HEIGHT_PIXELS = PLAYER_HEIGHT_METERS * PPM;
-    private static final float BULLET_COOLDOWN = 0.7f;
+    private static final float BULLET_COOLDOWN = 0.2f;
     private static final float JUMP_FORCE = 400f;
     private static final float HORIZONTAL_SPEED = 5f;
 
@@ -41,12 +41,19 @@ public class Player {
     private float cooldown;
     private Vector2 position;
     private boolean isLocalPlayer;
+    int unflipsprite;
+    boolean A_PRESSED;
+    boolean D_PRESSED;
+    boolean W_PRESSED;
+    boolean ENTER_PRESSED;
 
-    public Player(World world, ConnectedClient client, boolean isLocalPlayer, Vector2 initialPosition) {
+
+    public Player(World world, boolean isLocalPlayer, Vector2 initialPosition, int playerNumber) {
         this.world = world;
         this.isLocalPlayer = isLocalPlayer;
         bullets = new Array<>();
         cooldown = 0; // Initialize cooldown to zero
+
 
         // Box2D body definition
         BodyDef bodyDef = new BodyDef();
@@ -79,11 +86,25 @@ public class Player {
         shootAnimation = playerShoot.getshoot();
 
         currentAnimation = idleAnimation;
+        if (playerNumber == 2) {
+            PLAYER_WIDTH_PIXELS = -PLAYER_WIDTH_PIXELS;
+        }
+
+        unflipsprite = playerNumber;
 
         sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
     }
 
+
+    public void checkInputs() {
+        A_PRESSED = Gdx.input.isKeyPressed(Input.Keys.A);
+        D_PRESSED = Gdx.input.isKeyPressed(Input.Keys.D);
+        W_PRESSED = Gdx.input.isKeyPressed(Input.Keys.W);
+        ENTER_PRESSED = Gdx.input.isKeyPressed(Input.Keys.ENTER);
+    }
+
     public void update(float stateTime) {
+        checkInputs();
         if (isLocalPlayer) {
             handleInput(stateTime);
         }
@@ -95,26 +116,25 @@ public class Player {
     }
 
     private void handleInput(float stateTime) {
-        if (playerBody.getLinearVelocity().x == 0 && currentAnimation.isAnimationFinished(stateTime)) {
+        if (playerBody.getLinearVelocity().x == 0) {
             currentAnimation = idleAnimation;
         }
 
         horizontalForce = 0;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (A_PRESSED) {
             horizontalForce -= 1;
-            if (currentAnimation.isAnimationFinished(stateTime)) {
                 currentAnimation = runAnimation;
             }
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+ q
+        if (D_PRESSED) {
             horizontalForce += 1;
             if (currentAnimation.isAnimationFinished(stateTime)) {
                 currentAnimation = runAnimation;
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.W) && playerBody.getLinearVelocity().y == 0) {
+        if (W_PRESSED && playerBody.getLinearVelocity().y == 0) {
             playerBody.setAwake(true);
             playerBody.applyForceToCenter(0, JUMP_FORCE, false);
         }
@@ -129,6 +149,7 @@ public class Player {
         }
 
         playerBody.setLinearVelocity(horizontalForce * HORIZONTAL_SPEED, playerBody.getLinearVelocity().y);
+        System.out.println(Gdx.input.isKeyPressed(Input.Keys.D));
     }
 
     private void updatePosition(float stateTime) {
@@ -141,7 +162,7 @@ public class Player {
 
 
 
-    public void render(float stateTime, Camera camera) {
+    public void render(float stateTime , Camera camera) {
         position = playerBody.getPosition();
         spriteBatch.setProjectionMatrix(camera.combined);
 
@@ -150,7 +171,7 @@ public class Player {
         sprite.setRegion(currentFrame);
 
         // Set the sprite's size and flip based on direction
-        if (Gdx.input.isKeyPressed(Input.Keys.D) && isLocalPlayer) {
+        if (D_PRESSED && isLocalPlayer) {
             sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A) && isLocalPlayer) {
@@ -173,17 +194,13 @@ public class Player {
 
         // End the SpriteBatch
         spriteBatch.end();
-    }
 
-    public Vector2 getPosition() {
-        return playerBody.getPosition();
-    }
+        if (unflipsprite == 2){
+            unflipsprite += 1;
+            PLAYER_WIDTH_PIXELS = -PLAYER_WIDTH_PIXELS;
+        }
 
-    public boolean isFlipped() {
-        return sprite.getWidth() < 0;
-    }
 
-    public void dispose() {
-        spriteBatch.dispose();
-    }
-}
+
+    }}
+

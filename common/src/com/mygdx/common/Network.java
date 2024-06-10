@@ -18,6 +18,8 @@ public class Network {
         kryo.register(PlayerNumberReq.class);
         kryo.register(PlayerNumberSend.class);
         kryo.register(ConnectedClient.class);
+        kryo.register(ServerInput.class);
+        kryo.register(ClientInput.class);
     }
 
     static public class SendName {
@@ -45,6 +47,26 @@ public class Network {
 
     static public class PlayerNumberSend {
         public String Playernumber;
+    }
+
+
+    static public class ClientInput {
+        public boolean A_Pressed;
+        public boolean D_Pressed;
+        public boolean Enter_Pressed;
+        public boolean W_Pressed;
+        public ConnectedClient connectedClient1;
+        public ConnectedClient connectedClient2;
+    }
+
+    static public class ServerInput {
+        public boolean A_Pressed;
+        public boolean D_Pressed;
+        public boolean Enter_Pressed;
+        public boolean W_Pressed;
+        public ConnectedClient connectedClient1;
+        public ConnectedClient connectedClient2;
+
     }
 
 

@@ -9,6 +9,7 @@ import com.mygdx.common.ConnectedClient;
 import com.mygdx.common.Network.NotifyMessage;
 import com.mygdx.common.Network.PlayerNumberReq;
 import com.mygdx.common.Network.PlayerNumberSend;
+import com.mygdx.common.Network.ClientInput;
 
 import java.io.IOException;
 
@@ -113,7 +114,30 @@ public class ClientHandler {
     }
     public boolean getIsReady() {
         return isReady;
-    }}
+    }
+
+
+
+
+    public void SendInputs(boolean A, boolean D, boolean Enter, boolean W, ConnectedClient CLIENT1, ConnectedClient CLIENT2) {
+        ClientInput clientInput = new ClientInput();
+        clientInput.A_Pressed = A;
+        clientInput.D_Pressed = D;
+        clientInput.Enter_Pressed = Enter;
+        clientInput.W_Pressed = W;
+        clientInput.connectedClient1 = CLIENT1;
+        clientInput.connectedClient2 = CLIENT2;
+
+        client.sendTCP(clientInput);
+
+    }
+
+
+
+
+
+}
+
 
 
 
