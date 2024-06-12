@@ -45,8 +45,8 @@ public class Bullet {
         fixtureDef.density = 0f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
-
-        this.body.createFixture(fixtureDef).setUserData("bullet");
+        CustomUserData customBullet = new CustomUserData("bullet");
+        this.body.createFixture(fixtureDef).setUserData(customBullet);
 
         this.body.setGravityScale(0f);
 

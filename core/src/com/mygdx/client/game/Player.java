@@ -2,6 +2,7 @@ package com.mygdx.client.game;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.client.animations.DeadAnimation;
 import com.mygdx.client.animations.IdleAnimation;
 import com.mygdx.client.animations.RunAnimation;
 import com.mygdx.client.animations.ShootAnimation;
@@ -25,12 +27,15 @@ public class Player {
     private static final float JUMP_FORCE = 400f;
     private static final float HORIZONTAL_SPEED = 5f;
 
-    private RunAnimation playerRun;
+
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> runAnimation;
     private Animation<TextureRegion> shootAnimation;
+    private Animation<TextureRegion> deadAnimation;
     private IdleAnimation playerIdle;
     private ShootAnimation playerShoot;
+    private DeadAnimation playerDead;
+    private RunAnimation playerRun;
     private Animation<TextureRegion> currentAnimation;
     private SpriteBatch spriteBatch;
     private Sprite sprite;
@@ -46,6 +51,9 @@ public class Player {
     boolean D_PRESSED;
     boolean W_PRESSED;
     boolean ENTER_PRESSED;
+    boolean dead;
+    boolean DeadAnimDone;
+    Fixture fixture;
 
 
     public Player(World world, boolean isLocalPlayer, Vector2 initialPosition, int playerNumber) {
@@ -70,7 +78,9 @@ public class Player {
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 0f;
         playerBody.setFixedRotation(true);
-        playerBody.createFixture(fixtureDef).setUserData("player");
+        CustomUserData customPlayer = new CustomUserData("player");
+        fixture = playerBody.createFixture(fixtureDef);
+        fixture.setUserData(customPlayer);
         shape.dispose();
 
         spriteBatch = new SpriteBatch();
@@ -84,6 +94,10 @@ public class Player {
 
         playerShoot = new ShootAnimation();
         shootAnimation = playerShoot.getshoot();
+
+
+        playerDead = new DeadAnimation();
+        deadAnimation = playerDead.getdead();
 
         currentAnimation = idleAnimation;
         if (playerNumber == 2) {
@@ -108,10 +122,14 @@ public class Player {
         if (isLocalPlayer) {
             handleInput(stateTime);
         }
-        updatePosition(stateTime);
 
         if (cooldown > 0) {
             cooldown -= Gdx.graphics.getDeltaTime();
+        }
+        CustomUserData userData = (CustomUserData) fixture.getUserData();
+        if (userData != null && userData.getHP() == 0) {
+            world.destroyBody(playerBody);
+            dead = true;
         }
     }
 
@@ -126,7 +144,6 @@ public class Player {
             horizontalForce -= 1;
                 currentAnimation = runAnimation;
             }
- q
         if (D_PRESSED) {
             horizontalForce += 1;
             if (currentAnimation.isAnimationFinished(stateTime)) {
@@ -152,12 +169,7 @@ public class Player {
         System.out.println(Gdx.input.isKeyPressed(Input.Keys.D));
     }
 
-    private void updatePosition(float stateTime) {
-        position = playerBody.getPosition();
-        if (playerBody.getLinearVelocity().x == 0 && currentAnimation.isAnimationFinished(stateTime)) {
-            currentAnimation = idleAnimation;
-        }
-    }
+
 
 
 
@@ -167,8 +179,17 @@ public class Player {
         spriteBatch.setProjectionMatrix(camera.combined);
 
         // Get the current frame of the animation
-        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
-        sprite.setRegion(currentFrame);
+        if (!dead) {
+            TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+            sprite.setRegion(currentFrame);
+            sprite.setPosition(position.x * PPM - (sprite.getWidth() / 2), position.y * PPM - (sprite.getHeight() / 2));
+        } else if (dead && !DeadAnimDone) {
+            TextureRegion deadCurrentFrame = deadAnimation.getKeyFrame(stateTime);
+            sprite.setRegion(deadCurrentFrame);
+            if (deadAnimation.isAnimationFinished(stateTime)){
+                DeadAnimDone = true;
+            }
+        }
 
         // Set the sprite's size and flip based on direction
         if (D_PRESSED && isLocalPlayer) {
@@ -179,18 +200,27 @@ public class Player {
         }
 
         // Set the sprite's position based on the Box2D body's position
-        sprite.setPosition(position.x * PPM - (sprite.getWidth() / 2), position.y * PPM - (sprite.getHeight() / 2));
+
 
         // Begin the SpriteBatch
         spriteBatch.begin();
 
         // Draw the player sprite
+
+
         sprite.draw(spriteBatch);
+
+
+
 
         // Render bullets
         for (Bullet bullet : bullets) {
             bullet.render(spriteBatch);
         }
+
+
+
+
 
         // End the SpriteBatch
         spriteBatch.end();

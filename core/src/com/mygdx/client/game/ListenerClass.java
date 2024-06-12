@@ -20,8 +20,8 @@ public class ListenerClass implements ContactListener {
     public void preSolve(Contact contact, Manifold manifold) {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        String userDataA = (String) fixtureA.getUserData();
-        String userDataB = (String) fixtureB.getUserData();
+        CustomUserData userDataA = (CustomUserData) fixtureA.getUserData();
+        CustomUserData userDataB = (CustomUserData) fixtureB.getUserData();
 
         if (userDataA == null || userDataB == null) {
             return;
@@ -29,12 +29,12 @@ public class ListenerClass implements ContactListener {
 
         // Check if one of the fixtures is the player and the other is the platform
         boolean isPlayerAndPlatform =
-                ("player".equals(userDataA) && "platform".equals(userDataB)) ||
-                        ("platform".equals(userDataA) && "player".equals(userDataB));
+                ("player".equals(userDataA.getType()) && "platform".equals(userDataB.getType())) ||
+                        ("platform".equals(userDataA.getType()) && "player".equals(userDataB.getType()));
 
         if (isPlayerAndPlatform) {
-            float playerY = "player".equals(userDataA) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
-            float platformY = "platform".equals(userDataA) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
+            float playerY = "player".equals(userDataA.getType()) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
+            float platformY = "platform".equals(userDataA.getType()) ? fixtureA.getBody().getPosition().y : fixtureB.getBody().getPosition().y;
 
             // Check if the player is below the platform
             if (playerY < platformY + 0.2f) {  // Adjusted to 0.2 to be more clear (20f / 100)
@@ -49,18 +49,34 @@ public class ListenerClass implements ContactListener {
 
         // Check if a bullet hits the boundary or platform
         if (
-                "bullet".equals(userDataA) && "boundary".equals(userDataB) ||
-                "bullet".equals(userDataA) && "platform".equals(userDataB)
+                "bullet".equals(userDataA.getType()) && "boundary".equals(userDataB.getType()) ||
+                "bullet".equals(userDataA.getType()) && "platform".equals(userDataB.getType())
         ) {
             deletionList.add(fixtureA.getBody());
         } else if (
-                "bullet".equals(userDataB) && "boundary".equals(userDataA) ||
-                "bullet".equals(userDataB) && "platform".equals(userDataA)
+                "bullet".equals(userDataB.getType()) && "boundary".equals(userDataA.getType()) ||
+                "bullet".equals(userDataB.getType()) && "platform".equals(userDataA.getType())
 
         ) {
             deletionList.add(fixtureB.getBody());
         }
-    }
+
+        if (
+                "bullet".equals(userDataA.getType()) && "player".equals(userDataB.getType())
+        ) {
+            System.out.println("HIT");
+            userDataB.setHP(userDataB.getHP()-1);
+            deletionList.add(fixtureA.getBody());
+
+        } else if (
+                "bullet".equals(userDataB.getType()) && "player".equals(userDataA.getType())
+
+        ) {
+            System.out.println("HIT");
+            userDataA.setHP(userDataA.getHP()-1);
+            deletionList.add(fixtureB.getBody());
+
+        }}
 
     @Override
     public void postSolve(Contact contact, ContactImpulse contactImpulse) {
