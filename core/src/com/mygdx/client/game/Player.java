@@ -2,7 +2,6 @@ package com.mygdx.client.game;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,7 +14,6 @@ import com.mygdx.client.animations.DeadAnimation;
 import com.mygdx.client.animations.IdleAnimation;
 import com.mygdx.client.animations.RunAnimation;
 import com.mygdx.client.animations.ShootAnimation;
-import com.mygdx.common.ConnectedClient;
 
 public class Player {
     private static final float PPM = 100.0f;
@@ -53,6 +51,8 @@ public class Player {
     boolean ENTER_PRESSED;
     boolean dead;
     boolean DeadAnimDone;
+
+
     Fixture fixture;
 
 
@@ -125,13 +125,8 @@ public class Player {
 
         if (cooldown > 0) {
             cooldown -= Gdx.graphics.getDeltaTime();
-        }
-        CustomUserData userData = (CustomUserData) fixture.getUserData();
-        if (userData != null && userData.getHP() == 0) {
-            world.destroyBody(playerBody);
-            dead = true;
-        }
-    }
+        }}
+
 
     private void handleInput(float stateTime) {
         if (playerBody.getLinearVelocity().x == 0) {
@@ -142,8 +137,8 @@ public class Player {
 
         if (A_PRESSED) {
             horizontalForce -= 1;
-                currentAnimation = runAnimation;
-            }
+            currentAnimation = runAnimation;
+        }
         if (D_PRESSED) {
             horizontalForce += 1;
             currentAnimation = runAnimation;
@@ -168,11 +163,7 @@ public class Player {
     }
 
 
-
-
-
-
-    public void render(float stateTime , Camera camera) {
+    public void render(float stateTime, Camera camera) {
         position = playerBody.getPosition();
         spriteBatch.setProjectionMatrix(camera.combined);
 
@@ -191,13 +182,13 @@ public class Player {
             TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
             sprite.setRegion(currentFrame);
             sprite.setPosition(position.x * PPM - (sprite.getWidth() / 2), position.y * PPM - (sprite.getHeight() / 2));
-        } else if (dead && !DeadAnimDone) {
-            TextureRegion deadCurrentFrame = deadAnimation.getKeyFrame(stateTime);
+        } else if (dead ) {
+            deadAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+            TextureRegion deadCurrentFrame = deadAnimation.getKeyFrame(stateTime,false);
             sprite.setRegion(deadCurrentFrame);
-            if (deadAnimation.isAnimationFinished(stateTime)){
-                DeadAnimDone = true;
+
             }
-        }
+
 
         // Set the sprite's position based on the Box2D body's position
 
@@ -211,26 +202,29 @@ public class Player {
         sprite.draw(spriteBatch);
 
 
-
-
         // Render bullets
         for (Bullet bullet : bullets) {
             bullet.render(spriteBatch);
         }
 
 
-
-
-
         // End the SpriteBatch
         spriteBatch.end();
 
-        if (unflipsprite == 2){
+        if (unflipsprite == 2) {
             unflipsprite += 1;
             PLAYER_WIDTH_PIXELS = -PLAYER_WIDTH_PIXELS;
         }
 
 
+    }
 
-    }}
+    public Fixture getFixture() {
+        return fixture;
+    }
+
+    public void TurnDead() {
+        dead = true;
+    }
+}
 

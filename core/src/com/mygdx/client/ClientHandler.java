@@ -133,6 +133,11 @@ public class ClientHandler {
     }
 
 
+    public void DisconnectClient() {
+        client.close();
+    }
+
+
 
 
 

@@ -146,21 +146,6 @@ public class StartScreen extends ScreenAdapter  {
         FindBattle.setPosition(10, Gdx.graphics.getHeight()-200);
         FindBattle.addListener(new ClickListener() {
 
-
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-
-
-
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-
-
-            }
-
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Log.set(Log.LEVEL_DEBUG);
@@ -168,9 +153,6 @@ public class StartScreen extends ScreenAdapter  {
                 System.out.println("sending name:" + PlayerName);
                 LoadScreen loadScreen = new LoadScreen(clienthandler,game);
                 game.setScreen(loadScreen);
-
-
-
 
 
         }});

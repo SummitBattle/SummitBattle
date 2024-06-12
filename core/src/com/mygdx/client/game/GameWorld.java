@@ -8,14 +8,25 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.client.ClientHandler;
+import com.mygdx.client.Log;
+import com.mygdx.client.screens.EndScreen;
+import com.mygdx.client.screens.LoadScreen;
 import com.mygdx.common.ConnectedClient;
 
 public class GameWorld extends ApplicationAdapter {
     public static final float PPM = 100.0f;
+    int Timer5;
+
+
     private static final float STEP_TIME = 1f / 60f;
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
@@ -40,10 +51,19 @@ public class GameWorld extends ApplicationAdapter {
     ConnectedClient client2;
     String playernumber;
 
-    public GameWorld(ConnectedClient client1, ConnectedClient client2, String playernumber) {
+    CustomUserData player1data;
+    CustomUserData player2data;
+    Skin mySkin;
+    ClientHandler clientHandler;
+    boolean DeadHandling = true;
+
+
+    public GameWorld(ConnectedClient client1, ConnectedClient client2, String playernumber, ClientHandler clientHandler) {
         this.client1 = client1;
         this.client2 = client2;
         this.playernumber = playernumber;
+        this.clientHandler = clientHandler;
+
 
         System.out.println(playernumber);
 
@@ -52,6 +72,8 @@ public class GameWorld extends ApplicationAdapter {
     @Override
     public void create() {
         try {
+            mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
+
             // Initialize Box2D
             Box2D.init();
             world = new World(new Vector2(0, -18f), true);
@@ -89,6 +111,9 @@ public class GameWorld extends ApplicationAdapter {
                 player1 = new Player(world,   false, player1StartPos,1);
                 player2 = new Player(world,  true, player2StartPos,2);
             }
+
+            player1data = (CustomUserData) player1.getFixture().getUserData();
+            player2data = (CustomUserData) player2.getFixture().getUserData();
 
             // Verify player initialization
             if (player1 == null || player2 == null) {
@@ -136,6 +161,7 @@ public class GameWorld extends ApplicationAdapter {
     @Override
     public void render() {
         try {
+            System.out.println(DeadHandling);
             stateTime += Gdx.graphics.getDeltaTime() * 0.9;
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -145,6 +171,8 @@ public class GameWorld extends ApplicationAdapter {
             batch.begin();
             batch.draw(background, 0, 0, camera.viewportWidth + 400, camera.viewportHeight);
             batch.draw(arena, 0, 0, camera.viewportWidth, camera.viewportHeight);
+
+            if (!DeadHandling) {stage.draw();}
 
             // Logging player rendering
             Gdx.app.log("GameWorld", "Rendering players");
@@ -171,11 +199,10 @@ public class GameWorld extends ApplicationAdapter {
         arena.dispose();
     }
 
+
     public void update() {
         try {
-            if (playernumber.equals("Player1")){
 
-            }
             stepWorld();
             player1.update(stateTime);
             player2.update(stateTime);
@@ -188,9 +215,24 @@ public class GameWorld extends ApplicationAdapter {
             Gdx.app.log("GameWorld", "Error during update", e);
             throw e;  // Rethrow the exception after logging it
         }
+        if (!player1.dead || !player2.dead) {
+            DeadCheck();
     }
+        if (DeadHandling && (player1.dead || player2.dead)) {
 
-    public Body createRect(float x, float y, World world, float width, float height, boolean boundary) {
+            if (Timer5 < 250)
+            {
+                Timer5 += 1;
+            }
+
+            if (Timer5 >= 250) {
+                IfDead();
+            }
+            }}
+
+
+
+    public void createRect(float x, float y, World world, float width, float height, boolean boundary) {
         try {
             BodyDef def = new BodyDef();
             def.type = BodyDef.BodyType.StaticBody;
@@ -212,10 +254,40 @@ public class GameWorld extends ApplicationAdapter {
             }
             shape.dispose();
 
-            return body;
         } catch (Exception e) {
             Gdx.app.log("GameWorld", "Error during createRect", e);
             throw e;  // Rethrow the exception after logging it
         }
+    }
+
+    public void DeadCheck() {
+        if (player1data.getHP() == 0 && !player1.dead) {
+            world.destroyBody(player1.fixture.getBody());
+            player1.TurnDead();
+            stateTime = 0;
+        }
+
+
+        if (player2data.getHP() == 0 && !player2.dead) {
+            world.destroyBody(player2.fixture.getBody());
+            player2.TurnDead();
+            stateTime = 0;
+        }
+
+    }
+
+    public boolean isDeadHandling() {
+        return DeadHandling;
+    }
+
+
+
+    public void IfDead() {
+
+        clientHandler.DisconnectClient();
+        DeadHandling = false;
+
+
+
     }
 }
