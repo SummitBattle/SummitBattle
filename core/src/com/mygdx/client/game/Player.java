@@ -146,9 +146,7 @@ public class Player {
             }
         if (D_PRESSED) {
             horizontalForce += 1;
-            if (currentAnimation.isAnimationFinished(stateTime)) {
-                currentAnimation = runAnimation;
-            }
+            currentAnimation = runAnimation;
         }
 
         if (W_PRESSED && playerBody.getLinearVelocity().y == 0) {
@@ -179,6 +177,16 @@ public class Player {
         spriteBatch.setProjectionMatrix(camera.combined);
 
         // Get the current frame of the animation
+
+
+        // Set the sprite's size and flip based on direction
+        if (D_PRESSED && isLocalPlayer) {
+            sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A) && isLocalPlayer) {
+            sprite.setSize(PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
+        }
+
         if (!dead) {
             TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
             sprite.setRegion(currentFrame);
@@ -189,14 +197,6 @@ public class Player {
             if (deadAnimation.isAnimationFinished(stateTime)){
                 DeadAnimDone = true;
             }
-        }
-
-        // Set the sprite's size and flip based on direction
-        if (D_PRESSED && isLocalPlayer) {
-            sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A) && isLocalPlayer) {
-            sprite.setSize(PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
         }
 
         // Set the sprite's position based on the Box2D body's position
