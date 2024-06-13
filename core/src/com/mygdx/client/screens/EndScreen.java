@@ -23,10 +23,11 @@ import com.mygdx.client.animations.IdleAnimation;
 
 
 public class EndScreen extends ScreenAdapter  {
+
     private String PlayerName;
     private boolean boundary_y_up;
     private boolean boundary_y_down;
-    Main game;
+    private final Game game;
     OrthographicCamera camera;
     Label hoverlabel;
     boolean False;
@@ -55,7 +56,8 @@ public class EndScreen extends ScreenAdapter  {
     Label Name;
 
 
-    public EndScreen(String WinLose){
+    public EndScreen(Game game, String WinLose){
+        this.game = game;
         this.WinLose = WinLose;
 
     }
@@ -204,9 +206,6 @@ public class EndScreen extends ScreenAdapter  {
         ScreenUtils.clear(0.57f, 0.77f, 0.85f, 1);
         Gdx.gl.glClearColor(255, 0, 0, 255);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (hover) {
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT))) {
-                SelectCharacter = (SelectCharacter == 1) ? 2 : 1;            }}
 
 
 

@@ -15,7 +15,7 @@ public class Main extends Game{
 	@Override
 	public void create() {
 		startScreen = new StartScreen(this);
-		endScreen = new EndScreen("Lose");
+
 
 		setScreen(endScreen);
 

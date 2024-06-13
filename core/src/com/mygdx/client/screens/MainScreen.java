@@ -71,7 +71,7 @@ public class MainScreen extends ScreenAdapter {
 
 
         if (!gameworld.isDeadHandling()){
-            endScreen = new EndScreen(gameworld.getWinLose());
+            endScreen = new EndScreen(game,gameworld.getWinLose());
             game.setScreen(endScreen);
         }
 
