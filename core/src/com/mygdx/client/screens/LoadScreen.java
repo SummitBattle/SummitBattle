@@ -148,7 +148,7 @@ public class LoadScreen implements Screen {
         String Playernumber = clientHandler.getPlayerNumber();
 
         if (clientHandler.getIsReady()){
-            System.out.println("READY AND CHANGING SCREEN");
+
             mainscreen = new MainScreen(c1,c2,Playernumber,clientHandler,game, startScreen);
             game.setScreen(mainscreen);
         }

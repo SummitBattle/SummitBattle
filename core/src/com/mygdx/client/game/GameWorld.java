@@ -58,7 +58,6 @@ public class GameWorld extends ApplicationAdapter {
     ClientHandler clientHandler;
     boolean DeadHandling = true;
 
-
     public GameWorld(ConnectedClient client1, ConnectedClient client2, String playernumber, ClientHandler clientHandler) {
         this.client1 = client1;
         this.client2 = client2;
@@ -206,7 +205,23 @@ public class GameWorld extends ApplicationAdapter {
 
             stepWorld();
             player1.update(stateTime);
+
             player2.update(stateTime);
+
+            if (playernumber.equals("Player 1")){
+                clientHandler.SendInputs(player1.A_PRESSED, player1.D_PRESSED, player1.ENTER_PRESSED, player1.W_PRESSED, client1, client2);
+                player2.ReceiveInputs(clientHandler.EnemyA, clientHandler.EnemyW, clientHandler.EnemyEnter, clientHandler.EnemyD);
+                System.out.println("ENEMY CLIENTHALDER A IS MOVING??????????????????????????? : " + clientHandler.EnemyA);
+            }
+
+            if (playernumber.equals("Player 2"))   {
+                clientHandler.SendInputs(player2.A_PRESSED, player2.D_PRESSED, player2.ENTER_PRESSED, player2.W_PRESSED, client2, client1);
+                player1.ReceiveInputs(clientHandler.EnemyA, clientHandler.EnemyW, clientHandler.EnemyEnter, clientHandler.EnemyD);
+
+
+
+
+            }
             camera.update();
             for (Body body : listenerClass.getDeletionList()) {
                 world.destroyBody(body);

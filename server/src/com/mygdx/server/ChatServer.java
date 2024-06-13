@@ -15,6 +15,9 @@ import com.mygdx.common.Network.SendName;
 import com.mygdx.common.Network.PlayerNumberSend;
 import com.mygdx.common.ConnectedClient;
 import com.mygdx.common.Network.PlayerNumberReq;
+import com.mygdx.common.Network.ClientInput;
+import com.mygdx.common.Network.GameState;
+
 
 
 
@@ -22,6 +25,16 @@ public class ChatServer {
     private Server server;
     private ConnectedClientsManager clientsManager = new ConnectedClientsManager();
     int ClientID;
+    boolean A_PRESSED;
+    boolean D_PRESSED;
+    boolean W_PRESSED;
+    boolean ENTER_PRESSED;
+    ConnectedClient SENTCLIENT;
+    ConnectedClient REQUESTCLIENT;
+
+
+
+
 
     public ChatServer() throws IOException {
         server = new Server();
@@ -83,6 +96,28 @@ public class ChatServer {
                         playerNumberSend.Playernumber = "Player 2";
                     }
                     server.sendToTCP(connection.getID(), playerNumberSend);
+                }
+
+                if (object instanceof ClientInput) {
+                    A_PRESSED = ((ClientInput) object).A_Pressed;
+                    W_PRESSED = ((ClientInput) object).W_Pressed;
+                    D_PRESSED = ((ClientInput) object).D_Pressed;
+                    ENTER_PRESSED = ((ClientInput) object).Enter_Pressed;
+                    REQUESTCLIENT = ((ClientInput) object).REQUESTCLIENT;
+                    SENTCLIENT = ((ClientInput) object).SENTCLIENT;
+
+                    GameState gameState = new GameState();
+                    gameState.A_Pressed = A_PRESSED;
+                    gameState.W_Pressed = W_PRESSED;
+                    gameState.Enter_Pressed = ENTER_PRESSED;
+                    gameState.D_Pressed = D_PRESSED;
+                    server.sendToTCP(SENTCLIENT.getID(),gameState);
+
+
+
+
+
+
                 }
             }
         });

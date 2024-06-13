@@ -115,17 +115,30 @@ public class Player {
         D_PRESSED = Gdx.input.isKeyPressed(Input.Keys.D);
         W_PRESSED = Gdx.input.isKeyPressed(Input.Keys.W);
         ENTER_PRESSED = Gdx.input.isKeyPressed(Input.Keys.ENTER);
+
     }
 
+    public void ReceiveInputs(boolean A, boolean W, boolean ENTER_PRESSED, boolean D) {
+        this.A_PRESSED = A;
+        this.W_PRESSED = W;
+        this.ENTER_PRESSED = ENTER_PRESSED;
+        this.D_PRESSED = D;
+
+    }
+
+
+
     public void update(float stateTime) {
-        checkInputs();
+
         if (isLocalPlayer) {
-            handleInput(stateTime);
+            checkInputs();
         }
 
         if (cooldown > 0) {
             cooldown -= Gdx.graphics.getDeltaTime();
-        }}
+        }
+        handleInput(stateTime);
+    }
 
 
     private void handleInput(float stateTime) {

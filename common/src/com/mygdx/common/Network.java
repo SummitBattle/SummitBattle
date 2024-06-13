@@ -18,7 +18,7 @@ public class Network {
         kryo.register(PlayerNumberReq.class);
         kryo.register(PlayerNumberSend.class);
         kryo.register(ConnectedClient.class);
-        kryo.register(ServerInput.class);
+        kryo.register(GameState.class);
         kryo.register(ClientInput.class);
     }
 
@@ -55,17 +55,16 @@ public class Network {
         public boolean D_Pressed;
         public boolean Enter_Pressed;
         public boolean W_Pressed;
-        public ConnectedClient connectedClient1;
-        public ConnectedClient connectedClient2;
+        public ConnectedClient SENTCLIENT;
+        public ConnectedClient REQUESTCLIENT;
     }
 
-    static public class ServerInput {
+    static public class GameState {
         public boolean A_Pressed;
         public boolean D_Pressed;
         public boolean Enter_Pressed;
         public boolean W_Pressed;
-        public ConnectedClient connectedClient1;
-        public ConnectedClient connectedClient2;
+
 
     }
 

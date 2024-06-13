@@ -64,7 +64,6 @@ public class ListenerClass implements ContactListener {
         if (
                 "bullet".equals(userDataA.getType()) && "player".equals(userDataB.getType())
         ) {
-            System.out.println("HIT");
             userDataB.setHP(userDataB.getHP()-1);
             deletionList.add(fixtureA.getBody());
 
@@ -72,7 +71,7 @@ public class ListenerClass implements ContactListener {
                 "bullet".equals(userDataB.getType()) && "player".equals(userDataA.getType())
 
         ) {
-            System.out.println("HIT");
+
             userDataA.setHP(userDataA.getHP()-1);
             deletionList.add(fixtureB.getBody());
 

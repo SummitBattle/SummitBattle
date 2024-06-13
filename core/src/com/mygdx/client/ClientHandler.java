@@ -10,6 +10,7 @@ import com.mygdx.common.Network.NotifyMessage;
 import com.mygdx.common.Network.PlayerNumberReq;
 import com.mygdx.common.Network.PlayerNumberSend;
 import com.mygdx.common.Network.ClientInput;
+import com.mygdx.common.Network.GameState;
 
 import java.io.IOException;
 
@@ -29,6 +30,12 @@ public class ClientHandler {
     boolean isReady = false;
 
 
+    public boolean EnemyA;
+    public boolean EnemyD;
+    public boolean EnemyEnter;
+    public boolean EnemyW;
+
+
 
     ConnectedClient connectedClient2;
 
@@ -45,7 +52,7 @@ public class ClientHandler {
             public void connected(Connection connection) {
                 SendName sendName = new SendName();
                 sendName.name = clientName;
-                System.out.println("Sending name: " + sendName.name);
+
 
                 client.sendTCP(sendName);
 
@@ -74,10 +81,12 @@ public class ClientHandler {
                 }
                 if (object instanceof PlayerNumberSend) {
                     PlayerNumber = ((PlayerNumberSend)object).Playernumber;
-                    System.out.println("RECEIVED MY PLAYERNUMBER: PLAYERNUMBER IS: " + PlayerNumber +  "WITH INFO: " + connectedClient1.getName() +connectedClient2.getName() + isReady + PlayerNumber);
 
-                    System.out.println("DOING CALLBACK");
 
+                }
+
+                if (object instanceof GameState){
+                    SetInputs(((GameState) object).A_Pressed, ((GameState) object).D_Pressed, ((GameState) object).Enter_Pressed,  ((GameState) object).W_Pressed);
                 }
 
             }
@@ -119,16 +128,24 @@ public class ClientHandler {
 
 
 
-    public void SendInputs(boolean A, boolean D, boolean Enter, boolean W, ConnectedClient CLIENT1, ConnectedClient CLIENT2) {
+    public void SendInputs(boolean A, boolean D, boolean Enter, boolean W, ConnectedClient SENTCLIENT, ConnectedClient REQCLIENT) {
         ClientInput clientInput = new ClientInput();
         clientInput.A_Pressed = A;
         clientInput.D_Pressed = D;
         clientInput.Enter_Pressed = Enter;
         clientInput.W_Pressed = W;
-        clientInput.connectedClient1 = CLIENT1;
-        clientInput.connectedClient2 = CLIENT2;
+        clientInput.SENTCLIENT = SENTCLIENT;
+        clientInput.REQUESTCLIENT = REQCLIENT;
 
         client.sendTCP(clientInput);
+
+    }
+
+    public void SetInputs(boolean A, boolean D, boolean Enter, boolean W){
+        EnemyA = A;
+        EnemyD = D;
+        EnemyEnter = Enter;
+        EnemyW = W;
 
     }
 
