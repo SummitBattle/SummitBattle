@@ -23,6 +23,7 @@ import com.mygdx.client.screens.LoadScreen;
 import com.mygdx.common.ConnectedClient;
 
 public class GameWorld extends ApplicationAdapter {
+    String WinLose;
     public static final float PPM = 100.0f;
     int Timer5;
 
@@ -281,8 +282,22 @@ public class GameWorld extends ApplicationAdapter {
     }
 
 
+    public String getWinLose() {
+        return WinLose;
+    }
 
     public void IfDead() {
+
+        if ((player1.dead && playernumber.equals("Player 1")) || (player2.dead && playernumber.equals("Player 2"))){
+            WinLose = "Lose";
+
+        } else if ((player1.dead && playernumber.equals("Player 2")) || (player2.dead && playernumber.equals("Player 1")))
+        {
+            WinLose = "Win";
+
+        }
+
+
 
         clientHandler.DisconnectClient();
         DeadHandling = false;

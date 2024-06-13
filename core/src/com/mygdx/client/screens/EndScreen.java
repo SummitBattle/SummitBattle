@@ -29,7 +29,7 @@ public class EndScreen extends ScreenAdapter  {
     Main game;
     OrthographicCamera camera;
     Label hoverlabel;
-    private boolean False;
+    boolean False;
     boolean labelDisplayed = False;
 
     private Stage stage;
@@ -50,6 +50,15 @@ public class EndScreen extends ScreenAdapter  {
     TextureAtlas textureAtlas;
     int SelectCharacter = 1;
     IdleAnimation idleAnimation;
+    StartScreen startScreen;
+    String WinLose;
+    Label Name;
+
+
+    public EndScreen(String WinLose){
+        this.WinLose = WinLose;
+
+    }
 
 
 
@@ -139,18 +148,15 @@ public class EndScreen extends ScreenAdapter  {
         //Button
 
         Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
-        Button FindBattle = new TextButton("Find a battle", mySkin);
+        Button FindBattle = new TextButton("Return to Startscreen", mySkin);
         FindBattle.setSize(COL_WIDTH * 4, ROW_HEIGHT);
-        FindBattle.setPosition(10, Gdx.graphics.getHeight()-200);
+        FindBattle.setPosition(320,320);
         FindBattle.addListener(new ClickListener() {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Log.set(Log.LEVEL_DEBUG);
-                ClientHandler clienthandler = new ClientHandler(PlayerName);
-                System.out.println("sending name:" + PlayerName);
-                LoadScreen loadScreen = new LoadScreen(clienthandler,game);
-                game.setScreen(loadScreen);
+                startScreen = new StartScreen(game);
+                game.setScreen(startScreen);
 
 
             }});
@@ -160,98 +166,22 @@ public class EndScreen extends ScreenAdapter  {
 
 
 
-
-        Label Name = new Label("Name:",labelStyle);
+        if (WinLose.equals("Win")) {
+            Name = new Label("You won", labelStyle);
+        }
+        else if (WinLose.equals("Lose")) {
+            Name = new Label("You lost", labelStyle);
+        }
         Name.setSize(5,5);
         Name.setPosition(200,50);
         stage.addActor(Name);
 
-        TextField textField = new TextField("Enter Name", mySkin);
-        textField.setAlignment(Align.center);
-        textField.setSize(300, 40);
-        textField.setPosition(550, 550);
-        textField.setMaxLength(10);
-
-        TextButton confirmButton = new TextButton("Confirm", mySkin);
-        confirmButton.setSize(700, -200);
-        confirmButton.setPosition(350, 550);
-        confirmButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                PlayerName = textField.getText();
-
-                // Handle the input text here
-                Name.addAction(new Action() {
-                    @Override
-                    public boolean act(float v) {
-                        Name.setText("Name:" + "             " + PlayerName);
-                        return false;
-                    }
-                });
-            }
-        });
-        stage.addActor(textField);
-        stage.addActor(confirmButton);
 
 
 
 
 
 
-
-        Button Settings = new TextButton("        Settings", mySkin);
-        Settings.setSize(COL_WIDTH*2 , ROW_HEIGHT);
-        Settings.setPosition(10, Gdx.graphics.getHeight()-300);
-
-        Settings.addListener(new InputListener() {
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-            }
-        });
-        stage.addActor(Settings);
-
-        Button Character = new TextButton("         Change Character", mySkin);
-        Character.setSize(COL_WIDTH * 4, ROW_HEIGHT);
-        Character.setPosition(10, Gdx.graphics.getHeight()-400);
-        Character.addListener(new InputListener() {
-
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hover = true;
-                hoverlabel.setText("use <- or -> key");
-
-                Character.addAction(new Action(){
-
-                                        @Override
-                                        public boolean act(float v) {
-                                            idleAnimation.render(50,50,stateTime);
-
-                                            return false;
-                                        }
-                                    }
-
-                );
-
-
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hover = false;
-                hoverlabel.setText(" ");
-                Character.clearActions();
-
-
-            }
-
-
-        });
-
-
-        stage.addActor(Character);
 
 
 

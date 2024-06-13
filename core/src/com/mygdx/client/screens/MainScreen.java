@@ -39,10 +39,11 @@ public class MainScreen extends ScreenAdapter {
 
     @Override
     public void show () {
-        endScreen = new EndScreen();
+
 
         gameworld = new GameWorld(player1,player2, Playernumber,clientHandler);
         gameworld.create();
+
 
 
 
@@ -70,6 +71,7 @@ public class MainScreen extends ScreenAdapter {
 
 
         if (!gameworld.isDeadHandling()){
+            endScreen = new EndScreen(gameworld.getWinLose());
             game.setScreen(endScreen);
         }
 
