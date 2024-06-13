@@ -30,15 +30,17 @@ public class LoadScreen implements Screen {
     private float stateTime;
     ClientHandler clientHandler;
     MainScreen mainscreen;
+    StartScreen startScreen;
 
 
 
-    public LoadScreen(ClientHandler clientHandler, Game game) {
+    public LoadScreen(ClientHandler clientHandler, Game game, StartScreen startScreen) {
         this.clientHandler = clientHandler;
         this.game = game;
+        this.startScreen = startScreen;
+
 
     }
-
     @Override
     public void show() {
         stage = new Stage(new ScreenViewport());
@@ -147,7 +149,7 @@ public class LoadScreen implements Screen {
 
         if (clientHandler.getIsReady()){
             System.out.println("READY AND CHANGING SCREEN");
-            mainscreen = new MainScreen(c1,c2,Playernumber,clientHandler,game);
+            mainscreen = new MainScreen(c1,c2,Playernumber,clientHandler,game, startScreen);
             game.setScreen(mainscreen);
         }
         batch.end();

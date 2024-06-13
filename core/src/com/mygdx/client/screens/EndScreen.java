@@ -13,12 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.client.ClientHandler;
-import com.mygdx.client.Log;
-import com.mygdx.client.Main;
 import com.mygdx.client.animations.IdleAnimation;
 
 
@@ -27,7 +23,7 @@ public class EndScreen extends ScreenAdapter  {
     private String PlayerName;
     private boolean boundary_y_up;
     private boolean boundary_y_down;
-    private final Game game;
+    Game game;
     OrthographicCamera camera;
     Label hoverlabel;
     boolean False;
@@ -56,9 +52,10 @@ public class EndScreen extends ScreenAdapter  {
     Label Name;
 
 
-    public EndScreen(Game game, String WinLose){
+    public EndScreen(Game game, String WinLose, StartScreen startScreen){
         this.game = game;
         this.WinLose = WinLose;
+        this.startScreen = startScreen;
 
     }
 
@@ -157,8 +154,9 @@ public class EndScreen extends ScreenAdapter  {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                startScreen = new StartScreen(game);
                 game.setScreen(startScreen);
+
+
 
 
             }});
@@ -175,7 +173,7 @@ public class EndScreen extends ScreenAdapter  {
             Name = new Label("You lost", labelStyle);
         }
         Name.setSize(5,5);
-        Name.setPosition(200,50);
+        Name.setPosition(300,300);
         stage.addActor(Name);
 
 

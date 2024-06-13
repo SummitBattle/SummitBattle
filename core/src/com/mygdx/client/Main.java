@@ -7,6 +7,10 @@ import com.mygdx.client.screens.MainScreen;
 import com.mygdx.client.screens.StartScreen;
 
 public class Main extends Game{
+	public StartScreen getStartScreen() {
+		return startScreen;
+	}
+
 	private StartScreen startScreen;
 	private EndScreen endScreen;
 	private LoadScreen loadScreen;
@@ -17,7 +21,7 @@ public class Main extends Game{
 		startScreen = new StartScreen(this);
 
 
-		setScreen(endScreen);
+		setScreen(startScreen);
 
 	}
 
