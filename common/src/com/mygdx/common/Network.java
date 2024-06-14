@@ -13,29 +13,20 @@ public class Network {
         Kryo kryo = endPoint.getKryo();
         kryo.register(SendName.class);
         kryo.register(String[].class);
-        kryo.register(SomeResponse.class);
         kryo.register(NotifyMessage.class);
         kryo.register(PlayerNumberReq.class);
         kryo.register(PlayerNumberSend.class);
         kryo.register(ConnectedClient.class);
-        kryo.register(GameState.class);
-        kryo.register(ClientInput.class);
+
+        kryo.register(PlayerInput.class);
     }
 
     static public class SendName {
         public String name;
     }
 
-    static public class SomeResponse {
-        public String text;
-    }
 
-    static public class MoveCharacter {
-        public int x,y;
-    }
-    static public class UpdateCharacterg {
-        public int id,x,y;
-    }
+
     static public class NotifyMessage {
         public ConnectedClient connectedClient1;
         public ConnectedClient connectedClient2;
@@ -50,23 +41,8 @@ public class Network {
     }
 
 
-    static public class ClientInput {
-        public boolean A_Pressed;
-        public boolean D_Pressed;
-        public boolean Enter_Pressed;
-        public boolean W_Pressed;
-        public ConnectedClient SENTCLIENT;
-        public ConnectedClient REQUESTCLIENT;
-    }
-
-    static public class GameState {
-        public boolean A_Pressed;
-        public boolean D_Pressed;
-        public boolean Enter_Pressed;
-        public boolean W_Pressed;
 
 
-    }
 
 
 

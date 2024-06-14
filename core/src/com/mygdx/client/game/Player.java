@@ -10,10 +10,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.client.ClientHandler;
 import com.mygdx.client.animations.DeadAnimation;
 import com.mygdx.client.animations.IdleAnimation;
 import com.mygdx.client.animations.RunAnimation;
 import com.mygdx.client.animations.ShootAnimation;
+import com.mygdx.common.PlayerInput;
 
 public class Player {
     private static final float PPM = 100.0f;
@@ -24,7 +26,6 @@ public class Player {
     private static final float BULLET_COOLDOWN = 0.2f;
     private static final float JUMP_FORCE = 400f;
     private static final float HORIZONTAL_SPEED = 5f;
-
 
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> runAnimation;
@@ -44,24 +45,22 @@ public class Player {
     private float cooldown;
     private Vector2 position;
     private boolean isLocalPlayer;
-    int unflipsprite;
-    boolean A_PRESSED;
-    boolean D_PRESSED;
-    boolean W_PRESSED;
-    boolean ENTER_PRESSED;
-    boolean dead;
-    boolean DeadAnimDone;
+    private int unflipsprite;
+    private boolean A_PRESSED;
+    private boolean D_PRESSED;
+    private boolean W_PRESSED;
+    private boolean ENTER_PRESSED;
+    public boolean dead;
+    private boolean deadAnimationCompleted;
+    public Fixture fixture;
+    private ClientHandler clientHandler;
 
-
-    Fixture fixture;
-
-
-    public Player(World world, boolean isLocalPlayer, Vector2 initialPosition, int playerNumber) {
+    public Player(World world, boolean isLocalPlayer, Vector2 initialPosition, int playerNumber, ClientHandler clientHandler) {
         this.world = world;
         this.isLocalPlayer = isLocalPlayer;
+        this.clientHandler = clientHandler; // Assign client handler for network communication
         bullets = new Array<>();
         cooldown = 0; // Initialize cooldown to zero
-
 
         // Box2D body definition
         BodyDef bodyDef = new BodyDef();
@@ -95,43 +94,40 @@ public class Player {
         playerShoot = new ShootAnimation();
         shootAnimation = playerShoot.getshoot();
 
-
         playerDead = new DeadAnimation();
         deadAnimation = playerDead.getdead();
 
         currentAnimation = idleAnimation;
+
         if (playerNumber == 2) {
             PLAYER_WIDTH_PIXELS = -PLAYER_WIDTH_PIXELS;
         }
 
         unflipsprite = playerNumber;
-
         sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
     }
-
 
     public void checkInputs() {
         A_PRESSED = Gdx.input.isKeyPressed(Input.Keys.A);
         D_PRESSED = Gdx.input.isKeyPressed(Input.Keys.D);
         W_PRESSED = Gdx.input.isKeyPressed(Input.Keys.W);
         ENTER_PRESSED = Gdx.input.isKeyPressed(Input.Keys.ENTER);
-
     }
 
     public void ReceiveInputs(boolean A, boolean W, boolean ENTER_PRESSED, boolean D) {
-        this.A_PRESSED = A;
-        this.W_PRESSED = W;
-        this.ENTER_PRESSED = ENTER_PRESSED;
-        this.D_PRESSED = D;
-
+        if (!isLocalPlayer) {
+            this.A_PRESSED = A;
+            this.W_PRESSED = W;
+            this.ENTER_PRESSED = ENTER_PRESSED;
+            this.D_PRESSED = D;
+        }
     }
 
-
-
     public void update(float stateTime) {
-
         if (isLocalPlayer) {
             checkInputs();
+            // Send inputs to the server (you would have a method to do this)
+            sendInputsToServer();
         }
 
         if (cooldown > 0) {
@@ -140,6 +136,10 @@ public class Player {
         handleInput(stateTime);
     }
 
+    private void sendInputsToServer() {
+        PlayerInput playerInput = new PlayerInput(A_PRESSED, D_PRESSED, W_PRESSED, ENTER_PRESSED);
+        clientHandler.SendInputs(playerInput);
+    }
 
     private void handleInput(float stateTime) {
         if (playerBody.getLinearVelocity().x == 0) {
@@ -162,7 +162,7 @@ public class Player {
             playerBody.applyForceToCenter(0, JUMP_FORCE, false);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) && cooldown <= 0) {
+        if (ENTER_PRESSED && cooldown <= 0) {
             currentAnimation = shootAnimation;
             horizontalForce /= 5;
             Bullet bullet = new Bullet(world);
@@ -172,64 +172,60 @@ public class Player {
         }
 
         playerBody.setLinearVelocity(horizontalForce * HORIZONTAL_SPEED, playerBody.getLinearVelocity().y);
-        System.out.println(Gdx.input.isKeyPressed(Input.Keys.D));
     }
-
 
     public void render(float stateTime, Camera camera) {
         position = playerBody.getPosition();
         spriteBatch.setProjectionMatrix(camera.combined);
 
-        // Get the current frame of the animation
-
-
-        // Set the sprite's size and flip based on direction
-        if (D_PRESSED && isLocalPlayer) {
+        // Set sprite size and flip based on direction
+        if (D_PRESSED) {
             sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A) && isLocalPlayer) {
+        if (A_PRESSED) {
             sprite.setSize(PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
         }
 
+        // Handle animations
         if (!dead) {
             TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
             sprite.setRegion(currentFrame);
             sprite.setPosition(position.x * PPM - (sprite.getWidth() / 2), position.y * PPM - (sprite.getHeight() / 2));
-        } else if (dead ) {
-            deadAnimation.setPlayMode(Animation.PlayMode.NORMAL);
-            TextureRegion deadCurrentFrame = deadAnimation.getKeyFrame(stateTime,false);
-            sprite.setRegion(deadCurrentFrame);
-
+        } else {
+            // Handle dead animation
+            if (!deadAnimationCompleted) {
+                deadAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+                TextureRegion deadCurrentFrame = deadAnimation.getKeyFrame(stateTime, false);
+                sprite.setRegion(deadCurrentFrame);
+                if (deadAnimation.isAnimationFinished(stateTime)) {
+                    deadAnimationCompleted = true;
+                }
+            } else {
+                // Stay on the last frame of the dead animation
+                TextureRegion lastFrame = deadAnimation.getKeyFrames()[deadAnimation.getKeyFrames().length - 1];
+                sprite.setRegion(lastFrame);
             }
-
-
-        // Set the sprite's position based on the Box2D body's position
-
+        }
 
         // Begin the SpriteBatch
         spriteBatch.begin();
 
         // Draw the player sprite
-
-
         sprite.draw(spriteBatch);
-
 
         // Render bullets
         for (Bullet bullet : bullets) {
             bullet.render(spriteBatch);
         }
 
-
         // End the SpriteBatch
         spriteBatch.end();
 
+        // Flip sprite based on player number
         if (unflipsprite == 2) {
             unflipsprite += 1;
             PLAYER_WIDTH_PIXELS = -PLAYER_WIDTH_PIXELS;
         }
-
-
     }
 
     public Fixture getFixture() {
@@ -240,4 +236,3 @@ public class Player {
         dead = true;
     }
 }
-

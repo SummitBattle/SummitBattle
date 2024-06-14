@@ -8,19 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.client.ClientHandler;
-import com.mygdx.client.Log;
-import com.mygdx.client.screens.EndScreen;
-import com.mygdx.client.screens.LoadScreen;
 import com.mygdx.common.ConnectedClient;
+import com.mygdx.common.PlayerInput;
 
 public class GameWorld extends ApplicationAdapter {
     String WinLose;
@@ -34,8 +28,8 @@ public class GameWorld extends ApplicationAdapter {
 
     private Viewport viewport;
     private OrthographicCamera camera;
-    Player player1;
-    Player player2;
+    Player localplayer;
+    Player remoteplayer;
     private Texture arena;
     private Stage stage;
     private Texture background;
@@ -52,8 +46,8 @@ public class GameWorld extends ApplicationAdapter {
     ConnectedClient client2;
     String playernumber;
 
-    CustomUserData player1data;
-    CustomUserData player2data;
+    CustomUserData localplayerdata;
+    CustomUserData remoteplayerdata;
     Skin mySkin;
     ClientHandler clientHandler;
     boolean DeadHandling = true;
@@ -105,18 +99,18 @@ public class GameWorld extends ApplicationAdapter {
             // Create the players
             if (playernumber.equals("Player 1")) {
 
-                player1 = new Player(world,true, player1StartPos,1);
-                player2 = new Player(world,  false, player2StartPos,2);
+                localplayer = new Player(world,true, player1StartPos,1,clientHandler);
+                remoteplayer = new Player(world,  false, player2StartPos,2,clientHandler);
             } else if (playernumber.equals("Player 2")) {
-                player1 = new Player(world,   false, player1StartPos,1);
-                player2 = new Player(world,  true, player2StartPos,2);
+                remoteplayer = new Player(world,false, player1StartPos,1,clientHandler);
+                localplayer = new Player(world,  true, player2StartPos,2,clientHandler);
             }
 
-            player1data = (CustomUserData) player1.getFixture().getUserData();
-            player2data = (CustomUserData) player2.getFixture().getUserData();
+            localplayerdata = (CustomUserData) localplayer.getFixture().getUserData();
+            remoteplayerdata = (CustomUserData) remoteplayer.getFixture().getUserData();
 
             // Verify player initialization
-            if (player1 == null || player2 == null) {
+            if (localplayer == null || remoteplayer == null) {
                 throw new NullPointerException("Player initialization failed");
             }
 
@@ -175,9 +169,8 @@ public class GameWorld extends ApplicationAdapter {
             if (!DeadHandling) {stage.draw();}
 
             // Logging player rendering
-            Gdx.app.log("GameWorld", "Rendering players");
-            player1.render(stateTime, camera);
-            player2.render(stateTime, camera);
+            localplayer.render(stateTime, camera);
+            remoteplayer.render(stateTime, camera);
 
             batch.end();
 
@@ -204,24 +197,17 @@ public class GameWorld extends ApplicationAdapter {
         try {
 
             stepWorld();
-            player1.update(stateTime);
 
-            player2.update(stateTime);
+            PlayerInput Enemyinput = clientHandler.getEnemyInput();
 
-            if (playernumber.equals("Player 1")){
-                clientHandler.SendInputs(player1.A_PRESSED, player1.D_PRESSED, player1.ENTER_PRESSED, player1.W_PRESSED, client1, client2);
-                player2.ReceiveInputs(clientHandler.EnemyA, clientHandler.EnemyW, clientHandler.EnemyEnter, clientHandler.EnemyD);
-                System.out.println("ENEMY CLIENTHALDER A IS MOVING??????????????????????????? : " + clientHandler.EnemyA);
-            }
+            remoteplayer.ReceiveInputs(Enemyinput.A_PRESSED, Enemyinput.W_PRESSED, Enemyinput.ENTER_PRESSED, Enemyinput.D_PRESSED);
 
-            if (playernumber.equals("Player 2"))   {
-                clientHandler.SendInputs(player2.A_PRESSED, player2.D_PRESSED, player2.ENTER_PRESSED, player2.W_PRESSED, client2, client1);
-                player1.ReceiveInputs(clientHandler.EnemyA, clientHandler.EnemyW, clientHandler.EnemyEnter, clientHandler.EnemyD);
+            localplayer.update(stateTime);
+            remoteplayer.update(stateTime);
 
 
 
 
-            }
             camera.update();
             for (Body body : listenerClass.getDeletionList()) {
                 world.destroyBody(body);
@@ -231,10 +217,10 @@ public class GameWorld extends ApplicationAdapter {
             Gdx.app.log("GameWorld", "Error during update", e);
             throw e;  // Rethrow the exception after logging it
         }
-        if (!player1.dead || !player2.dead) {
+        if (!localplayer.dead || !remoteplayer.dead) {
             DeadCheck();
     }
-        if (DeadHandling && (player1.dead || player2.dead)) {
+        if (DeadHandling && (localplayer.dead || remoteplayer.dead)) {
 
             if (Timer5 < 250)
             {
@@ -277,16 +263,16 @@ public class GameWorld extends ApplicationAdapter {
     }
 
     public void DeadCheck() {
-        if (player1data.getHP() == 0 && !player1.dead) {
-            world.destroyBody(player1.fixture.getBody());
-            player1.TurnDead();
+        if (localplayerdata.getHP() == 0 && !localplayer.dead) {
+            world.destroyBody(localplayer.fixture.getBody());
+            localplayer.TurnDead();
             stateTime = 0;
         }
 
 
-        if (player2data.getHP() == 0 && !player2.dead) {
-            world.destroyBody(player2.fixture.getBody());
-            player2.TurnDead();
+        if (remoteplayerdata.getHP() == 0 && !remoteplayer.dead) {
+            world.destroyBody(remoteplayer.fixture.getBody());
+            remoteplayer.TurnDead();
             stateTime = 0;
         }
 
@@ -303,10 +289,11 @@ public class GameWorld extends ApplicationAdapter {
 
     public void IfDead() {
 
-        if ((player1.dead && playernumber.equals("Player 1")) || (player2.dead && playernumber.equals("Player 2"))){
-            WinLose = "Lose";
+        if (localplayer.dead) {
+                WinLose = "Lose";
+            }
 
-        } else if ((player1.dead && playernumber.equals("Player 2")) || (player2.dead && playernumber.equals("Player 1")))
+        if (remoteplayer.dead)
         {
             WinLose = "Win";
 

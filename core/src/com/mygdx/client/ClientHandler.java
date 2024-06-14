@@ -9,8 +9,9 @@ import com.mygdx.common.ConnectedClient;
 import com.mygdx.common.Network.NotifyMessage;
 import com.mygdx.common.Network.PlayerNumberReq;
 import com.mygdx.common.Network.PlayerNumberSend;
-import com.mygdx.common.Network.ClientInput;
-import com.mygdx.common.Network.GameState;
+
+
+import com.mygdx.common.PlayerInput;
 
 import java.io.IOException;
 
@@ -30,10 +31,12 @@ public class ClientHandler {
     boolean isReady = false;
 
 
-    public boolean EnemyA;
-    public boolean EnemyD;
-    public boolean EnemyEnter;
-    public boolean EnemyW;
+    public PlayerInput getEnemyInput() {
+        return EnemyInput;
+    }
+
+    PlayerInput EnemyInput = new PlayerInput();
+    PlayerInput playerInput;
 
 
 
@@ -41,6 +44,7 @@ public class ClientHandler {
 
     public ClientHandler(String playerName) {
         this.clientName = playerName;
+
 
         // Initialize the client
         client = new Client();
@@ -75,19 +79,19 @@ public class ClientHandler {
 
 
                         PlayerNumberReq playerNumberReq = new PlayerNumberReq();
-                        System.out.println("Sending PlayerNumberReq");
                         client.sendTCP(playerNumberReq);
 
                 }
                 if (object instanceof PlayerNumberSend) {
                     PlayerNumber = ((PlayerNumberSend)object).Playernumber;
 
-
+                }
+                if (object instanceof PlayerInput) {
+                    EnemyInput = ((PlayerInput) object);
+                    System.out.println("receiced enemy output");
                 }
 
-                if (object instanceof GameState){
-                    SetInputs(((GameState) object).A_Pressed, ((GameState) object).D_Pressed, ((GameState) object).Enter_Pressed,  ((GameState) object).W_Pressed);
-                }
+
 
             }
         });
@@ -128,26 +132,14 @@ public class ClientHandler {
 
 
 
-    public void SendInputs(boolean A, boolean D, boolean Enter, boolean W, ConnectedClient SENTCLIENT, ConnectedClient REQCLIENT) {
-        ClientInput clientInput = new ClientInput();
-        clientInput.A_Pressed = A;
-        clientInput.D_Pressed = D;
-        clientInput.Enter_Pressed = Enter;
-        clientInput.W_Pressed = W;
-        clientInput.SENTCLIENT = SENTCLIENT;
-        clientInput.REQUESTCLIENT = REQCLIENT;
+    public void SendInputs(PlayerInput playerInput) {
+        PlayerInput playerInput1 = playerInput;
 
-        client.sendTCP(clientInput);
+        client.sendTCP(playerInput1);
 
     }
 
-    public void SetInputs(boolean A, boolean D, boolean Enter, boolean W){
-        EnemyA = A;
-        EnemyD = D;
-        EnemyEnter = Enter;
-        EnemyW = W;
 
-    }
 
 
     public void DisconnectClient() {

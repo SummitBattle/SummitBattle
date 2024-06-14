@@ -15,10 +15,9 @@ import com.mygdx.common.Network.SendName;
 import com.mygdx.common.Network.PlayerNumberSend;
 import com.mygdx.common.ConnectedClient;
 import com.mygdx.common.Network.PlayerNumberReq;
-import com.mygdx.common.Network.ClientInput;
-import com.mygdx.common.Network.GameState;
 
 
+import com.mygdx.common.PlayerInput;
 
 
 public class ChatServer {
@@ -81,7 +80,7 @@ public class ChatServer {
                     for (ConnectedClient client : ConnectedClients) {
                         System.out.println("IP: " + client.getIpAddress() + ", Name: " + client.getName() + ", ID: " + client.getID());
                     }
-                    matchmakingManager.Matchmaking(clientsManager.getConnectedClients(),clientsManager,server);
+                    matchmakingManager.matchmaking(clientsManager.getConnectedClients(),clientsManager,server);
 
 
 
@@ -98,20 +97,16 @@ public class ChatServer {
                     server.sendToTCP(connection.getID(), playerNumberSend);
                 }
 
-                if (object instanceof ClientInput) {
-                    A_PRESSED = ((ClientInput) object).A_Pressed;
-                    W_PRESSED = ((ClientInput) object).W_Pressed;
-                    D_PRESSED = ((ClientInput) object).D_Pressed;
-                    ENTER_PRESSED = ((ClientInput) object).Enter_Pressed;
-                    REQUESTCLIENT = ((ClientInput) object).REQUESTCLIENT;
-                    SENTCLIENT = ((ClientInput) object).SENTCLIENT;
+                if (object instanceof PlayerInput) {
 
-                    GameState gameState = new GameState();
-                    gameState.A_Pressed = A_PRESSED;
-                    gameState.W_Pressed = W_PRESSED;
-                    gameState.Enter_Pressed = ENTER_PRESSED;
-                    gameState.D_Pressed = D_PRESSED;
-                    server.sendToTCP(SENTCLIENT.getID(),gameState);
+                    PlayerInput input = (PlayerInput) object;
+                    int clientId = connection.getID();
+                    Integer pairedClientId = matchmakingManager.getPairedClientId(clientId);
+                    if (pairedClientId != null) {
+                        server.sendToTCP(pairedClientId, input);
+
+                        System.out.println("sending enemy input to: " + pairedClientId);
+                    }
 
 
 
