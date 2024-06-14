@@ -149,7 +149,7 @@ public class EndScreen extends ScreenAdapter  {
         Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
         Button FindBattle = new TextButton("Return to Startscreen", mySkin);
         FindBattle.setSize(COL_WIDTH * 4, ROW_HEIGHT);
-        FindBattle.setPosition(320,320);
+        FindBattle.setPosition(320,300);
         FindBattle.addListener(new ClickListener() {
 
             @Override
@@ -172,8 +172,8 @@ public class EndScreen extends ScreenAdapter  {
         else if (WinLose.equals("Lose")) {
             Name = new Label("You lost", labelStyle);
         }
-        Name.setSize(5,5);
-        Name.setPosition(300,300);
+        Name.scaleBy(3);
+        Name.setPosition(440,500);
         stage.addActor(Name);
 
 

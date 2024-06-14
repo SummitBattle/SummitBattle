@@ -2,13 +2,13 @@ package com.mygdx.client.game;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.client.ClientHandler;
 import com.mygdx.client.animations.DeadAnimation;
@@ -55,7 +55,11 @@ public class Player {
     public Fixture fixture;
     private ClientHandler clientHandler;
 
+
+
+
     public Player(World world, boolean isLocalPlayer, Vector2 initialPosition, int playerNumber, ClientHandler clientHandler) {
+
         this.world = world;
         this.isLocalPlayer = isLocalPlayer;
         this.clientHandler = clientHandler; // Assign client handler for network communication
@@ -105,6 +109,8 @@ public class Player {
 
         unflipsprite = playerNumber;
         sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
+
+
     }
 
     public void checkInputs() {
@@ -235,4 +241,6 @@ public class Player {
     public void TurnDead() {
         dead = true;
     }
+
+
 }

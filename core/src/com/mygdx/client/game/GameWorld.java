@@ -2,13 +2,18 @@ package com.mygdx.client.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -48,9 +53,18 @@ public class GameWorld extends ApplicationAdapter {
 
     CustomUserData localplayerdata;
     CustomUserData remoteplayerdata;
-    Skin mySkin;
+
     ClientHandler clientHandler;
     boolean DeadHandling = true;
+    Label localLabel;
+    Label remoteLabel;
+    String remoteName;
+    String localName;
+
+    Label.LabelStyle labelStyle;
+
+    Vector2 remotePos;
+    Vector2 localPos;
 
     public GameWorld(ConnectedClient client1, ConnectedClient client2, String playernumber, ClientHandler clientHandler) {
         this.client1 = client1;
@@ -66,7 +80,22 @@ public class GameWorld extends ApplicationAdapter {
     @Override
     public void create() {
         try {
-            mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixelfont.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            parameter.size = 15;
+            parameter.borderWidth = 2;
+            parameter.color = Color.WHITE;
+            parameter.shadowOffsetX = 3;
+            parameter.shadowOffsetY = 3;
+            parameter.shadowColor = new Color(1,1,1,0);
+            BitmapFont font24 = generator.generateFont(parameter); // font size 24 pixels
+            generator.dispose();
+
+            labelStyle = new Label.LabelStyle();
+            labelStyle.font = font24;
+
+
+
 
             // Initialize Box2D
             Box2D.init();
@@ -101,9 +130,22 @@ public class GameWorld extends ApplicationAdapter {
 
                 localplayer = new Player(world,true, player1StartPos,1,clientHandler);
                 remoteplayer = new Player(world,  false, player2StartPos,2,clientHandler);
+
+                localName = client1.getName();
+                remoteName = client2.getName();
+
+
+
+
             } else if (playernumber.equals("Player 2")) {
                 remoteplayer = new Player(world,false, player1StartPos,1,clientHandler);
                 localplayer = new Player(world,  true, player2StartPos,2,clientHandler);
+
+                localName = client2.getName();
+                remoteName = client1.getName();
+
+
+
             }
 
             localplayerdata = (CustomUserData) localplayer.getFixture().getUserData();
@@ -135,6 +177,22 @@ public class GameWorld extends ApplicationAdapter {
             Gdx.app.log("GameWorld", "Error during create", e);
             throw e;  // Rethrow the exception after logging it
         }
+
+
+
+        remoteLabel = new Label(remoteName, labelStyle);
+        remoteLabel.setPosition(0,0);
+        stage.addActor(remoteLabel);
+
+        localPos = localplayer.getFixture().getBody().getPosition();
+        localLabel = new Label(localName,labelStyle);
+
+
+        localLabel.setPosition(0,0);
+        stage.addActor(localLabel);
+
+
+
     }
 
     @Override
@@ -174,6 +232,8 @@ public class GameWorld extends ApplicationAdapter {
 
             batch.end();
 
+            stage.draw();
+
             // Update the world
             update();
             debugRenderer.render(world, camera.combined.scl(PPM));
@@ -205,7 +265,18 @@ public class GameWorld extends ApplicationAdapter {
             localplayer.update(stateTime);
             remoteplayer.update(stateTime);
 
+            localPos = localplayer.getFixture().getBody().getPosition();
+            localPos.x = (localPos.x * PPM)-40;
+            localPos.y = (localPos.y * PPM)-70;
 
+            remotePos = remoteplayer.getFixture().getBody().getPosition();
+            remotePos.x = (remotePos.x * PPM)-40;
+            remotePos.y = (remotePos.y * PPM)-70;
+
+
+
+            localLabel.setPosition(localPos.x, localPos.y);
+            remoteLabel.setPosition(remotePos.x, remotePos.y);
 
 
             camera.update();
@@ -307,4 +378,6 @@ public class GameWorld extends ApplicationAdapter {
 
 
     }
+
 }
+

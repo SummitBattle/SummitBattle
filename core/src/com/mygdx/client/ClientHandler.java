@@ -88,7 +88,6 @@ public class ClientHandler {
                 }
                 if (object instanceof PlayerInput) {
                     EnemyInput = ((PlayerInput) object);
-                    System.out.println("receiced enemy output");
                 }
 
 

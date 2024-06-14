@@ -28,20 +28,15 @@ public class StartScreen extends ScreenAdapter  {
     private boolean boundary_y_down;
     Main game;
     OrthographicCamera camera;
-    Label hoverlabel;
-    private boolean False;
-    boolean labelDisplayed = False;
+
 
     private Stage stage;
 
     private boolean hover;
-    private boolean ready;
 
     Texture background;
 
-    Animation<Sprite> animation;
     float stateTime = 0;
-
 
     SpriteBatch batch;
 
@@ -57,19 +52,13 @@ public class StartScreen extends ScreenAdapter  {
 
 
 
-
-
 @Override
     public void show () {
         idleAnimation = new IdleAnimation();
 
 
-
-
-
         batch = new SpriteBatch();
         //Spritesheet
-
 
 
         //Background
@@ -148,11 +137,14 @@ public class StartScreen extends ScreenAdapter  {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Log.set(Log.LEVEL_DEBUG);
-                ClientHandler clienthandler = new ClientHandler(PlayerName);
-                System.out.println("sending name:" + PlayerName);
-                LoadScreen loadScreen = new LoadScreen(clienthandler,game, game.getStartScreen());
-                game.setScreen(loadScreen);
+
+                if (PlayerName.length() > 1) {
+                    Log.set(Log.LEVEL_DEBUG);
+                    ClientHandler clienthandler = new ClientHandler(PlayerName);
+                    System.out.println("sending name:" + PlayerName);
+                    LoadScreen loadScreen = new LoadScreen(clienthandler, game, game.getStartScreen());
+                    game.setScreen(loadScreen);
+                }
 
 
         }});
@@ -172,7 +164,7 @@ public class StartScreen extends ScreenAdapter  {
         textField.setAlignment(Align.center);
         textField.setSize(300, 40);
         textField.setPosition(550, 550);
-        textField.setMaxLength(10);
+        textField.setMaxLength(13);
 
         TextButton confirmButton = new TextButton("Confirm", mySkin);
         confirmButton.setSize(700, -200);
@@ -180,12 +172,18 @@ public class StartScreen extends ScreenAdapter  {
         confirmButton.addListener(new ClickListener() {
                                       @Override
                                       public void clicked(InputEvent event, float x, float y) {
-                                          PlayerName = textField.getText();
+                                          PlayerName = textField.getText().trim();
 
                                           // Handle the input text here
                                           Name.addAction(new Action() {
                                               @Override
                                               public boolean act(float v) {
+
+                                                  if (PlayerName.length() <= 1) {
+                                                      textField.setText("invalid name");
+
+                                                  }
+
                                                   Name.setText("Name:" + "             " + PlayerName);
                                                   return false;
                                               }
