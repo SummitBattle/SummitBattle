@@ -66,7 +66,6 @@ public class ClientHandler {
 
             @Override
             public void disconnected(Connection connection) {
-                System.out.println("Disconnected from the server.");
             }
 
                 @Override

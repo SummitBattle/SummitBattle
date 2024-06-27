@@ -73,7 +73,7 @@ public class GameWorld extends ApplicationAdapter {
         this.clientHandler = clientHandler;
 
 
-        System.out.println(playernumber);
+
 
     }
 
