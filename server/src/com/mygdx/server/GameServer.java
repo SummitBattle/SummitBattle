@@ -20,7 +20,7 @@ import com.mygdx.common.Network.PlayerNumberReq;
 import com.mygdx.common.PlayerInput;
 
 
-public class ChatServer {
+public class GameServer {
     private Server server;
     private ConnectedClientsManager clientsManager = new ConnectedClientsManager();
     int ClientID;
@@ -35,7 +35,7 @@ public class ChatServer {
 
 
 
-    public ChatServer() throws IOException {
+    public GameServer() throws IOException {
         server = new Server();
         Network.register(server);
         MatchmakingManager matchmakingManager = new MatchmakingManager();
@@ -119,7 +119,8 @@ public class ChatServer {
 
         // Choose a higher port number, e.g., 5000
         int port = 5000;
-        server.bind(port);
+        int UDPPort = 4999;
+        server.bind(port,UDPPort);
         server.start();
 
         System.out.println("Server started and listening on port " + port);
@@ -128,7 +129,7 @@ public class ChatServer {
     public static void main(String[] args) {
         try {
             Log.set(Log.LEVEL_DEBUG);
-            new ChatServer();
+            new GameServer();
         } catch (IOException e) {
             e.printStackTrace();
         }

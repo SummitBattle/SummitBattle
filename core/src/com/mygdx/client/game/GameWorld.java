@@ -213,6 +213,7 @@ public class GameWorld extends ApplicationAdapter {
     @Override
     public void render() {
         try {
+            camera.combined.scl(PPM);
             System.out.println(DeadHandling);
             stateTime += Gdx.graphics.getDeltaTime() * 0.9;
             Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -236,7 +237,6 @@ public class GameWorld extends ApplicationAdapter {
 
             // Update the world
             update();
-            debugRenderer.render(world, camera.combined.scl(PPM));
         } catch (Exception e) {
             Gdx.app.log("GameWorld", "Error during render", e);
             throw e;  // Rethrow the exception after logging it
@@ -290,7 +290,7 @@ public class GameWorld extends ApplicationAdapter {
         }
         if (!localplayer.dead || !remoteplayer.dead) {
             DeadCheck();
-    }
+        }
         if (DeadHandling && (localplayer.dead || remoteplayer.dead)) {
 
             if (Timer5 < 250)
@@ -301,7 +301,7 @@ public class GameWorld extends ApplicationAdapter {
             if (Timer5 >= 250) {
                 IfDead();
             }
-            }}
+        }}
 
 
 
@@ -361,8 +361,8 @@ public class GameWorld extends ApplicationAdapter {
     public void IfDead() {
 
         if (localplayer.dead) {
-                WinLose = "Lose";
-            }
+            WinLose = "Lose";
+        }
 
         if (remoteplayer.dead)
         {
@@ -380,4 +380,3 @@ public class GameWorld extends ApplicationAdapter {
     }
 
 }
-

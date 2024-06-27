@@ -14,11 +14,13 @@ import com.mygdx.common.Network.PlayerNumberSend;
 import com.mygdx.common.PlayerInput;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class ClientHandler {
     private static final int TIMEOUT = 5000;
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5000; // Updated to match server port
+    private static final int UDPPort = 4999;
 
 
     private Client client;
@@ -36,7 +38,7 @@ public class ClientHandler {
     }
 
     PlayerInput EnemyInput = new PlayerInput();
-    PlayerInput playerInput;
+
 
 
 
@@ -66,7 +68,6 @@ public class ClientHandler {
 
             @Override
             public void disconnected(Connection connection) {
-                System.out.println("Disconnected from the server.");
             }
 
                 @Override
@@ -96,7 +97,8 @@ public class ClientHandler {
         });
 
         try {
-            client.connect(TIMEOUT, HOST, PORT);
+            InetAddress inetAddress = client.discoverHost(UDPPort,TIMEOUT);
+            client.connect(TIMEOUT, inetAddress, PORT, UDPPort);
         } catch (IOException e) {
             System.err.println("Failed to connect to the server: " + e.getMessage());
             e.printStackTrace();
