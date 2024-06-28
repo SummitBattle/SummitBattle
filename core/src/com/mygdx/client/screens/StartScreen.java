@@ -138,9 +138,19 @@ public class StartScreen extends ScreenAdapter  {
                 if (PlayerName.length() > 1) {
                     Log.set(Log.LEVEL_DEBUG);
                     ClientHandler clienthandler = new ClientHandler(PlayerName);
-                    LoadScreen loadScreen = new LoadScreen(clienthandler, game, game.getStartScreen());
-                    game.setScreen(loadScreen);
-                    Wind.stop(id);
+                    if (!clienthandler.noServer()) {
+                        LoadScreen loadScreen = new LoadScreen(clienthandler, game, game.getStartScreen());
+                        game.setScreen(loadScreen);
+                        Wind.stop(id);
+                    }
+                    if (clienthandler.noServer()){
+                        Label NoHost = new Label("No Server found", labelStyle);
+                        NoHost.setSize(5,5);
+                        NoHost.setPosition(400,400);
+                        stage.addActor(NoHost);
+
+
+                    }
                 }
 
 
@@ -231,7 +241,6 @@ public class StartScreen extends ScreenAdapter  {
     @Override
     public void dispose() {
         batch.dispose();
-        textureAtlas.dispose();
         Wind.dispose();
     }}
 

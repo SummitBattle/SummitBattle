@@ -26,16 +26,7 @@ public class IdleAnimation {
         return IdleAnim;
     }
 
-    public void render(int x, int y, float stateTime) {
 
-        idleSprite = IdleAnim.getKeyFrame(stateTime, true);
-        idleSprite.setSize(100, 100);
-        idleSprite.setPosition(x, y);
-
-        IdleBatch.begin();
-        idleSprite.draw(IdleBatch);
-        IdleBatch.end();
-    }
 
 
 }

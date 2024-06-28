@@ -15,9 +15,6 @@ public class ConnectedClient {
         this.id = id;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
-    }
 
     public String getName() {
         return name;

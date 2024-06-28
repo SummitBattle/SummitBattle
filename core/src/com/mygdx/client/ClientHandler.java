@@ -24,6 +24,7 @@ public class ClientHandler {
     private Client client;
     private String clientName;
     ConnectedClient connectedClient1;
+    boolean noServer;
 
 
 
@@ -54,6 +55,7 @@ public class ClientHandler {
         client.addListener(new Listener() {
             @Override
             public void connected(Connection connection) {
+                noServer = false;
                 SendName sendName = new SendName();
                 sendName.name = clientName;
 
@@ -94,13 +96,19 @@ public class ClientHandler {
             }
         });
 
+        InetAddress inetAddress = client.discoverHost(UDPPort,TIMEOUT);
+
+        if (inetAddress != null)     {
         try {
-            InetAddress inetAddress = client.discoverHost(UDPPort,TIMEOUT);
+            noServer = false;
             client.connect(TIMEOUT, inetAddress, PORT, UDPPort);
-        } catch (IOException e) {
-            System.err.println("Failed to connect to the server: " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }}
+        if (inetAddress == null) {
+            noServer = true;
         }
+
     }
 
     public void stop() {
@@ -118,9 +126,7 @@ public class ClientHandler {
         return connectedClient2;
     }
 
-    public String getClientName() {
-        return clientName;
-    }
+
     public String getPlayerNumber() {
         return PlayerNumber;
     }
@@ -128,6 +134,7 @@ public class ClientHandler {
         return isReady;
     }
 
+    public boolean noServer(){ return noServer; }
 
 
 
@@ -137,8 +144,6 @@ public class ClientHandler {
         client.sendTCP(playerInput1);
 
     }
-
-
 
 
     public void DisconnectClient() {
