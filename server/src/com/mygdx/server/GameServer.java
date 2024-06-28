@@ -40,7 +40,6 @@ public class GameServer {
         server.addListener(new Listener() {
             @Override
             public void connected(Connection connection) {
-                System.out.println("Client connected: " + connection.getID());
 
             }
 
@@ -48,14 +47,12 @@ public class GameServer {
             public void disconnected(Connection connection) {
                 int dcID = connection.getID();
                 clientsManager.removeConnectedClientById(dcID);
-                System.out.println("Client with ID: " + dcID + " disconnected");
             }
 
             @Override
             public void received(Connection connection, Object object) {
                 if (object instanceof SendName) {
                     String name = ((SendName) object).name;
-                    System.out.println("NAME IS: " + name);
 
                     if (name == null || name.trim().isEmpty()) {
                         return;
@@ -68,13 +65,10 @@ public class GameServer {
                     String ipAddress = address.getAddress().getHostAddress();
                     ClientID = connection.getID();
 
-                    System.out.println("Received name '" + clientName + "' from client at IP: " + ipAddress + " with ID: " + ClientID);
                     clientsManager.addConnectedClient(ipAddress, clientName, ClientID);
 
                     List<ConnectedClient> ConnectedClients = clientsManager.getConnectedClients();
-                    System.out.println("Connected Clients:");
                     for (ConnectedClient client : ConnectedClients) {
-                        System.out.println("IP: " + client.getIpAddress() + ", Name: " + client.getName() + ", ID: " + client.getID());
                     }
                     matchmakingManager.matchmaking(clientsManager.getConnectedClients(),clientsManager,server);
 
@@ -101,7 +95,6 @@ public class GameServer {
                     if (pairedClientId != null) {
                         server.sendToTCP(pairedClientId, input);
 
-                        System.out.println("sending enemy input to: " + pairedClientId);
                     }
 
 
