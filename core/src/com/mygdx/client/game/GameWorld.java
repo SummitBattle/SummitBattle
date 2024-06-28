@@ -2,6 +2,7 @@ package com.mygdx.client.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,10 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.client.ClientHandler;
@@ -66,6 +65,9 @@ public class GameWorld extends ApplicationAdapter {
     Vector2 remotePos;
     Vector2 localPos;
 
+
+    Sound Wind;
+
     public GameWorld(ConnectedClient client1, ConnectedClient client2, String playernumber, ClientHandler clientHandler) {
         this.client1 = client1;
         this.client2 = client2;
@@ -79,7 +81,7 @@ public class GameWorld extends ApplicationAdapter {
 
     @Override
     public void create() {
-        try {
+
             FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixelfont.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = 15;
@@ -121,7 +123,12 @@ public class GameWorld extends ApplicationAdapter {
             batch = new SpriteBatch();
 
             // Logging before player creation
-            Gdx.app.log("GameWorld", "Initializing players");
+
+
+            Wind = Gdx.audio.newSound(Gdx.files.internal("Sounds/wind.mp3"));
+            long id = Wind.loop();
+            Wind.play(id);
+            Wind.setVolume(id,0.5f);
 
 
 
@@ -151,12 +158,9 @@ public class GameWorld extends ApplicationAdapter {
             localplayerdata = (CustomUserData) localplayer.getFixture().getUserData();
             remoteplayerdata = (CustomUserData) remoteplayer.getFixture().getUserData();
 
-            // Verify player initialization
-            if (localplayer == null || remoteplayer == null) {
-                throw new NullPointerException("Player initialization failed");
-            }
 
-            Gdx.app.log("GameWorld", "Players initialized successfully");
+
+
 
             // Create arena bodies
             createRect(650, 82, world, 28, 26, true);
@@ -173,11 +177,6 @@ public class GameWorld extends ApplicationAdapter {
             createRect(652, 980, world, 45, 18, false);
             createRect(0, 0, world, 1, 2500, true);
             createRect(camera.viewportWidth, 0, world, 1, 2500, true);
-        } catch (Exception e) {
-            Gdx.app.log("GameWorld", "Error during create", e);
-            throw e;  // Rethrow the exception after logging it
-        }
-
 
 
         remoteLabel = new Label(remoteName, labelStyle);
@@ -212,7 +211,6 @@ public class GameWorld extends ApplicationAdapter {
 
     @Override
     public void render() {
-        try {
             camera.combined.scl(PPM);
             System.out.println(DeadHandling);
             stateTime += Gdx.graphics.getDeltaTime() * 0.9;
@@ -237,10 +235,7 @@ public class GameWorld extends ApplicationAdapter {
 
             // Update the world
             update();
-        } catch (Exception e) {
-            Gdx.app.log("GameWorld", "Error during render", e);
-            throw e;  // Rethrow the exception after logging it
-        }
+
     }
 
     @Override
@@ -250,11 +245,12 @@ public class GameWorld extends ApplicationAdapter {
         debugRenderer.dispose();
         background.dispose();
         arena.dispose();
+        localplayer.dispose();
+        remoteplayer.dispose();
     }
 
 
     public void update() {
-        try {
 
             stepWorld();
 
@@ -284,10 +280,8 @@ public class GameWorld extends ApplicationAdapter {
                 world.destroyBody(body);
             }
             listenerClass.getDeletionList().clear();
-        } catch (Exception e) {
-            Gdx.app.log("GameWorld", "Error during update", e);
-            throw e;  // Rethrow the exception after logging it
-        }
+
+
         if (!localplayer.dead || !remoteplayer.dead) {
             DeadCheck();
         }
@@ -306,7 +300,7 @@ public class GameWorld extends ApplicationAdapter {
 
 
     public void createRect(float x, float y, World world, float width, float height, boolean boundary) {
-        try {
+
             BodyDef def = new BodyDef();
             def.type = BodyDef.BodyType.StaticBody;
             def.position.set(x / PPM, y / PPM);
@@ -327,10 +321,7 @@ public class GameWorld extends ApplicationAdapter {
             }
             shape.dispose();
 
-        } catch (Exception e) {
-            Gdx.app.log("GameWorld", "Error during createRect", e);
-            throw e;  // Rethrow the exception after logging it
-        }
+
     }
 
     public void DeadCheck() {
@@ -374,6 +365,7 @@ public class GameWorld extends ApplicationAdapter {
 
         clientHandler.DisconnectClient();
         DeadHandling = false;
+        Wind.stop();
 
 
 

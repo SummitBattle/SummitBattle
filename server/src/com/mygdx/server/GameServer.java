@@ -1,23 +1,19 @@
 package com.mygdx.server;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
-
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-
-
-import com.mygdx.common.Network;
-import com.mygdx.common.Network.SendName;
-import com.mygdx.common.Network.PlayerNumberSend;
 import com.mygdx.common.ConnectedClient;
+import com.mygdx.common.Network;
 import com.mygdx.common.Network.PlayerNumberReq;
-
-
+import com.mygdx.common.Network.PlayerNumberSend;
+import com.mygdx.common.Network.SendName;
 import com.mygdx.common.PlayerInput;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.List;
 
 
 public class GameServer {

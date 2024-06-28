@@ -1,17 +1,22 @@
 package com.mygdx.client.screens;
 
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -19,7 +24,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.client.ClientHandler;
 import com.mygdx.client.Log;
 import com.mygdx.client.Main;
-import com.mygdx.client.animations.IdleAnimation;
+
 
 
 public class StartScreen extends ScreenAdapter  {
@@ -43,8 +48,8 @@ public class StartScreen extends ScreenAdapter  {
     ParallaxLayer[] layers;
 
     TextureAtlas textureAtlas;
-    int SelectCharacter = 1;
-    IdleAnimation idleAnimation;
+
+    Sound Wind;
 
     public StartScreen(Main game) {
         this.game = game;
@@ -54,7 +59,10 @@ public class StartScreen extends ScreenAdapter  {
 
 @Override
     public void show () {
-        idleAnimation = new IdleAnimation();
+        Wind = Gdx.audio.newSound(Gdx.files.internal("Sounds/wind.mp3"));
+        long id = Wind.loop();
+        Wind.setVolume(id, 0.5f);
+        Wind.play(id);
 
 
         batch = new SpriteBatch();
@@ -68,7 +76,6 @@ public class StartScreen extends ScreenAdapter  {
         int COL_WIDTH = Gdx.graphics.getWidth() / 12;
         Gdx.input.setInputProcessor(stage);
         background = new Texture((Gdx.files.internal("Background/sky.png")));
-
 
         //Display
         camera = new OrthographicCamera(background.getWidth(), background.getHeight());
@@ -84,12 +91,6 @@ public class StartScreen extends ScreenAdapter  {
         layers[5] = new ParallaxLayer(new Texture("Background/hill.png"), 0.6f, true, false);
         layers[6] = new ParallaxLayer(new Texture("Background/clouds_front_t.png"), 0.6f, true, false);
         layers[7] = new ParallaxLayer(new Texture("Background/clouds_front.png"), 0.6f, true, false);
-
-
-
-
-
-
 
 
         for (ParallaxLayer layer : layers) {
@@ -112,7 +113,6 @@ public class StartScreen extends ScreenAdapter  {
 
 
 
-
         Label hoverlabel = new Label(" ", labelStyle);
 
         hoverlabel.setPosition(350,300);
@@ -122,9 +122,6 @@ public class StartScreen extends ScreenAdapter  {
         Title.setSize((float) Gdx.graphics.getWidth() /HELP_GUIDES*5,ROW_HEIGHT);
         Title.setPosition((float) Gdx.graphics.getWidth() /2 - 125,Gdx.graphics.getHeight()-100);
         stage.addActor(Title);
-
-
-
 
 
         //Button
@@ -143,14 +140,12 @@ public class StartScreen extends ScreenAdapter  {
                     ClientHandler clienthandler = new ClientHandler(PlayerName);
                     LoadScreen loadScreen = new LoadScreen(clienthandler, game, game.getStartScreen());
                     game.setScreen(loadScreen);
+                    Wind.stop(id);
                 }
 
 
         }});
         stage.addActor(FindBattle);
-
-
-
 
 
 
@@ -161,13 +156,13 @@ public class StartScreen extends ScreenAdapter  {
 
         TextField textField = new TextField("Enter Name", mySkin);
         textField.setAlignment(Align.center);
-        textField.setSize(300, 40);
+        textField.setSize(250, 40);
         textField.setPosition(550, 550);
         textField.setMaxLength(13);
 
         TextButton confirmButton = new TextButton("Confirm", mySkin);
-        confirmButton.setSize(700, -200);
-        confirmButton.setPosition(350, 550);
+        confirmButton.setSize(200,40);
+        confirmButton.setPosition(550,450);
         confirmButton.addListener(new ClickListener() {
                                       @Override
                                       public void clicked(InputEvent event, float x, float y) {
@@ -182,7 +177,6 @@ public class StartScreen extends ScreenAdapter  {
                                                       textField.setText("invalid name");
 
                                                   }
-
                                                   Name.setText("Name:" + "             " + PlayerName);
                                                   return false;
                                               }
@@ -192,80 +186,8 @@ public class StartScreen extends ScreenAdapter  {
         stage.addActor(textField);
         stage.addActor(confirmButton);
 
-
-
-
-
-
-
-        Button Settings = new TextButton("        Settings", mySkin);
-        Settings.setSize(COL_WIDTH*2 , ROW_HEIGHT);
-        Settings.setPosition(10, Gdx.graphics.getHeight()-300);
-
-        Settings.addListener(new InputListener() {
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-            }
-        });
-        stage.addActor(Settings);
-
-        Button Character = new TextButton("         Change Character", mySkin);
-        Character.setSize(COL_WIDTH * 4, ROW_HEIGHT);
-        Character.setPosition(10, Gdx.graphics.getHeight()-400);
-        Character.addListener(new InputListener() {
-
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-                hover = true;
-                hoverlabel.setText("use <- or -> key");
-
-                Character.addAction(new Action(){
-
-                                        @Override
-                                        public boolean act(float v) {
-                                            idleAnimation.render(50,50,stateTime);
-
-                                            return false;
-                                        }
-                                    }
-
-                );
-
-
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                hover = false;
-                hoverlabel.setText(" ");
-                Character.clearActions();
-
-
-            }
-
-
-        });
-
-
-        stage.addActor(Character);
-
-
-
     }
 
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    // @Override
-    //public void resize(int width, int height) {
-
-    //}
     @Override
     public void render (float delta) {
 
@@ -273,14 +195,7 @@ public class StartScreen extends ScreenAdapter  {
         ScreenUtils.clear(0.57f, 0.77f, 0.85f, 1);
         Gdx.gl.glClearColor(255, 0, 0, 255);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (hover) {
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT))) {
-                SelectCharacter = (SelectCharacter == 1) ? 2 : 1;            }}
 
-
-
-
-        //Parallax Moving
 
         int speed = 50;
         if (!hover) {
@@ -307,22 +222,9 @@ public class StartScreen extends ScreenAdapter  {
             layer.render(batch);
         }
 
-
         batch.end();
         stage.act();
         stage.draw();
-
-
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
 
     }
 
@@ -330,18 +232,6 @@ public class StartScreen extends ScreenAdapter  {
     public void dispose() {
         batch.dispose();
         textureAtlas.dispose();
+        Wind.dispose();
     }}
-//@Override
-//public void pause() {
 
-//}
-
-//@Override
-//public void resume() {
-
-//}
-
-//@Override
-//public void dispose() {
-
-//}

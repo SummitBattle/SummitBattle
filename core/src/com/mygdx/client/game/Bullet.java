@@ -14,10 +14,8 @@ public class Bullet {
     private Sprite bulletSprite;
     private World bulletWorld;
     private Vector2 oldPosition;
-    private boolean dead;
 
 
-    // Static block to load the texture atlas once
     static {
         textureAtlas = new TextureAtlas("Bullet/bullets.txt");
     }
@@ -52,7 +50,7 @@ public class Bullet {
 
         shape.dispose();
 
-        this.body.setLinearVelocity(spriteFlipped ? -20 : 20, 0);
+        this.body.setLinearVelocity(spriteFlipped ? -40 : 40, 0);
 
         return body;
     }
@@ -67,8 +65,5 @@ public class Bullet {
         }
     }
 
-    public boolean isOffScreen(float screenWidth) {
-        float posX = body.getPosition().x * PPM;
-        return posX < 0 || posX > screenWidth;
-    }
+
 }

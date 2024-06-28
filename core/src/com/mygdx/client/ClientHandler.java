@@ -3,14 +3,12 @@ package com.mygdx.client;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.mygdx.common.Network;
-import com.mygdx.common.Network.SendName;
 import com.mygdx.common.ConnectedClient;
+import com.mygdx.common.Network;
 import com.mygdx.common.Network.NotifyMessage;
 import com.mygdx.common.Network.PlayerNumberReq;
 import com.mygdx.common.Network.PlayerNumberSend;
-
-
+import com.mygdx.common.Network.SendName;
 import com.mygdx.common.PlayerInput;
 
 import java.io.IOException;

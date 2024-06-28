@@ -4,9 +4,9 @@ import com.esotericsoftware.kryonet.Server;
 import com.mygdx.common.ConnectedClient;
 import com.mygdx.common.Network.NotifyMessage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public class MatchmakingManager {
     private Map<Integer, Integer> clientPairs = new HashMap<>(); // Store pairs of connected clients

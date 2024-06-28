@@ -1,6 +1,10 @@
 package com.mygdx.client.screens;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -31,6 +35,7 @@ public class LoadScreen implements Screen {
     ClientHandler clientHandler;
     MainScreen mainscreen;
     StartScreen startScreen;
+    Sound Wind;
 
 
 
@@ -45,6 +50,7 @@ public class LoadScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+
 
         background = new Texture(Gdx.files.internal("Background/sky.png"));
         batch = new SpriteBatch();
@@ -66,6 +72,12 @@ public class LoadScreen implements Screen {
         Label loadingLabel = new Label(loadingName, labelStyle);
         loadingLabel.setPosition(420, 390);
         stage.addActor(loadingLabel);
+
+        Wind = Gdx.audio.newSound(Gdx.files.internal("Sounds/wind.mp3"));
+        long id = Wind.loop();
+        Wind.play(id);
+        Wind.setVolume(id,0.5f);
+
 
         loadingLabel.addAction(new Action() {
             @Override
@@ -151,6 +163,7 @@ public class LoadScreen implements Screen {
 
             mainscreen = new MainScreen(c1,c2,Playernumber,clientHandler,game, startScreen);
             game.setScreen(mainscreen);
+            Wind.stop();
         }
         batch.end();
         stage.act(delta);
@@ -164,5 +177,6 @@ public class LoadScreen implements Screen {
         stage.dispose();
         batch.dispose();
         background.dispose();
+        Wind.dispose();
 
     }}

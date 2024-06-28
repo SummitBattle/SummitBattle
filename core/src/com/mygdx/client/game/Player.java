@@ -1,14 +1,15 @@
 package com.mygdx.client.game;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.client.ClientHandler;
 import com.mygdx.client.animations.DeadAnimation;
@@ -49,11 +50,16 @@ public class Player {
     private boolean A_PRESSED;
     private boolean D_PRESSED;
     private boolean W_PRESSED;
+    Sound JumpSound;
+    Sound ShootSound;
+    Sound RunSound;
     private boolean ENTER_PRESSED;
     public boolean dead;
     private boolean deadAnimationCompleted;
     public Fixture fixture;
     private ClientHandler clientHandler;
+    boolean RunSoundPlaying;
+    long id;
 
 
 
@@ -110,6 +116,12 @@ public class Player {
         unflipsprite = playerNumber;
         sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
 
+        //Sounds
+
+        JumpSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/jump.mp3"));
+        ShootSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/shoot.mp3"));
+        RunSound = Gdx.audio.newSound(Gdx.files.internal("Sounds/run.mp3"));
+
 
     }
 
@@ -121,7 +133,7 @@ public class Player {
     }
 
     public void ReceiveInputs(boolean A, boolean W, boolean ENTER_PRESSED, boolean D) {
-        if (!isLocalPlayer) {
+        if (!isLocalPlayer && !dead) {
             this.A_PRESSED = A;
             this.W_PRESSED = W;
             this.ENTER_PRESSED = ENTER_PRESSED;
@@ -130,7 +142,7 @@ public class Player {
     }
 
     public void update(float stateTime) {
-        if (isLocalPlayer) {
+        if (isLocalPlayer && !dead) {
             checkInputs();
             // Send inputs to the server (you would have a method to do this)
             sendInputsToServer();
@@ -157,13 +169,22 @@ public class Player {
         if (A_PRESSED) {
             horizontalForce -= 1;
             currentAnimation = runAnimation;
-        }
+            if (!RunSoundPlaying) {
+                id = RunSound.play();
+                RunSoundPlaying = true;
+            }}
+
         if (D_PRESSED) {
             horizontalForce += 1;
             currentAnimation = runAnimation;
+            if (!RunSoundPlaying) {
+                id = RunSound.play();
+                RunSoundPlaying = true;
+            }
         }
 
         if (W_PRESSED && playerBody.getLinearVelocity().y == 0) {
+            JumpSound.play();
             playerBody.setAwake(true);
             playerBody.applyForceToCenter(0, JUMP_FORCE, false);
         }
@@ -174,6 +195,7 @@ public class Player {
             Bullet bullet = new Bullet(world);
             bullet.createBullet(playerBody.getPosition().x, playerBody.getPosition().y, sprite.getWidth() > 0);
             bullets.add(bullet);
+            ShootSound.play();
             cooldown = BULLET_COOLDOWN; // Reset cooldown
         }
 
@@ -187,9 +209,17 @@ public class Player {
         // Set sprite size and flip based on direction
         if (D_PRESSED) {
             sprite.setSize(-PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
+
         }
         if (A_PRESSED) {
             sprite.setSize(PLAYER_WIDTH_PIXELS, PLAYER_HEIGHT_PIXELS);
+
+        }
+
+        if (currentAnimation != runAnimation){
+            RunSound.stop(id);
+            RunSoundPlaying = false;
+
         }
 
         // Handle animations
@@ -240,6 +270,12 @@ public class Player {
 
     public void TurnDead() {
         dead = true;
+    }
+
+    public void dispose(){
+        JumpSound.dispose();
+        ShootSound.dispose();
+        spriteBatch.dispose();
     }
 
 

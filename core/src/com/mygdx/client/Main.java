@@ -1,7 +1,6 @@
 package com.mygdx.client;
 
 import com.badlogic.gdx.Game;
-
 import com.mygdx.client.screens.StartScreen;
 
 public class Main extends Game{
