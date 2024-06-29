@@ -60,7 +60,7 @@ public class ClientHandler {
                 sendName.name = clientName;
 
 
-                client.sendTCP(sendName);
+                client.sendUDP(sendName);
 
 
 
@@ -80,7 +80,7 @@ public class ClientHandler {
 
 
                         PlayerNumberReq playerNumberReq = new PlayerNumberReq();
-                        client.sendTCP(playerNumberReq);
+                        client.sendUDP(playerNumberReq);
 
                 }
                 if (object instanceof PlayerNumberSend) {
@@ -141,7 +141,7 @@ public class ClientHandler {
     public void SendInputs(PlayerInput playerInput) {
         PlayerInput playerInput1 = playerInput;
 
-        client.sendTCP(playerInput1);
+        client.sendUDP(playerInput1);
 
     }
 

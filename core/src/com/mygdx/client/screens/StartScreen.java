@@ -241,6 +241,7 @@ public class StartScreen extends ScreenAdapter  {
     @Override
     public void dispose() {
         batch.dispose();
+
         Wind.dispose();
     }}
 

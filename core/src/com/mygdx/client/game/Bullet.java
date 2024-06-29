@@ -50,7 +50,7 @@ public class Bullet {
 
         shape.dispose();
 
-        this.body.setLinearVelocity(spriteFlipped ? -40 : 40, 0);
+        this.body.setLinearVelocity(spriteFlipped ? -20 : 20, 0);
 
         return body;
     }
@@ -59,7 +59,8 @@ public class Bullet {
         Vector2 position = body.getPosition();
 
         if (oldPosition.dst2(position) > 0.00000001f) {  // Use precomputed squared distance
-            bulletSprite.setPosition((position.x * PPM) - (bulletSprite.getWidth() / 2), (position.y * PPM) - (bulletSprite.getHeight() / 2));
+            bulletSprite.setPosition((position.x * PPM) - (bulletSprite.getWidth() / 2),
+                    (position.y * PPM) - (bulletSprite.getHeight() / 2));
             bulletSprite.draw(batch);
             oldPosition.set(position); // Update old position only if moved
         }
