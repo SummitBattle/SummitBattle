@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("Summit Battle");
 		config.setWindowedMode(1000,800);
-		config.setResizable(false);
+		config.setResizable(true);
 		config.useVsync(true);
 		new Lwjgl3Application( (new Main()), config);
 

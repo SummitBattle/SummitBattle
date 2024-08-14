@@ -1,4 +1,6 @@
 include 'desktop', 'core'
 include 'server'
 include 'common'
+include 'assets'
+
 
