@@ -8,7 +8,7 @@ buildscript {
         google()
     }
     dependencies {
-        // Remove KryoNet dependency from buildscript as it's not needed there
+
     }
 }
 
@@ -47,6 +47,11 @@ project(":desktop") {
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        // https://mvnrepository.com/artifact/com.badlogicgames.packr/packr
+        // https://mvnrepository.com/artifact/com.badlogicgames.packr/packr
+        implementation 'com.badlogicgames.packr:packr:1.2'
+
+
 
 
     }

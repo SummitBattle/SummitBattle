@@ -19,6 +19,7 @@ public class ClientHandler {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5000; // Updated to match server port
     private static final int UDPPort = 4999;
+    String Serverip;
 
 
     private Client client;
@@ -43,8 +44,9 @@ public class ClientHandler {
 
     ConnectedClient connectedClient2;
 
-    public ClientHandler(String playerName) {
+    public ClientHandler(String playerName, String ServerIP) {
         this.clientName = playerName;
+        Serverip = ServerIP;
 
 
         // Initialize the client
@@ -68,6 +70,7 @@ public class ClientHandler {
 
             @Override
             public void disconnected(Connection connection) {
+                stop();
             }
 
                 @Override
@@ -96,18 +99,6 @@ public class ClientHandler {
             }
         });
 
-        InetAddress inetAddress = client.discoverHost(UDPPort,TIMEOUT);
-
-        if (inetAddress != null)     {
-        try {
-            noServer = false;
-            client.connect(TIMEOUT, inetAddress, PORT, UDPPort);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }}
-        if (inetAddress == null) {
-            noServer = true;
-        }
 
     }
 
@@ -115,6 +106,16 @@ public class ClientHandler {
         if (client != null) {
             client.stop();
         }
+    }
+
+    public void connect(){
+        try {
+            client.connect(TIMEOUT, Serverip, PORT, UDPPort);
+        } catch (IOException ex) {
+            noServer = true;
+            ex.printStackTrace();
+        }
+
     }
 
     public Client getClient() {

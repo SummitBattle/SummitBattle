@@ -14,7 +14,7 @@ public class CustomUserData {
         this.Type = TYPE;
 
         if (Type.equals("player")) {
-        HP = 1;
+        HP = 2;
         }
 
 

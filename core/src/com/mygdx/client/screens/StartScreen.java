@@ -25,6 +25,10 @@ import com.mygdx.client.ClientHandler;
 import com.mygdx.client.Log;
 import com.mygdx.client.Main;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.URL;
 
 
 public class StartScreen extends ScreenAdapter  {
@@ -47,9 +51,10 @@ public class StartScreen extends ScreenAdapter  {
 
     ParallaxLayer[] layers;
 
-    TextureAtlas textureAtlas;
+
 
     Sound Wind;
+    String ServerIP;
 
     public StartScreen(Main game) {
         this.game = game;
@@ -59,6 +64,7 @@ public class StartScreen extends ScreenAdapter  {
 
 @Override
     public void show () {
+
         Wind = Gdx.audio.newSound(Gdx.files.internal("Sounds/wind.mp3"));
         long id = Wind.loop();
         Wind.setVolume(id, 0.5f);
@@ -128,8 +134,8 @@ public class StartScreen extends ScreenAdapter  {
 
         Skin mySkin = new Skin(Gdx.files.internal("skin/vhs-ui.json"));
         Button FindBattle = new TextButton("Find a battle", mySkin);
-        FindBattle.setSize(COL_WIDTH * 4, ROW_HEIGHT);
-        FindBattle.setPosition(10, Gdx.graphics.getHeight()-200);
+        FindBattle.setSize(300,100);
+        FindBattle.setPosition(350, 300);
         FindBattle.addListener(new ClickListener() {
 
             @Override
@@ -137,7 +143,8 @@ public class StartScreen extends ScreenAdapter  {
 
                 if (PlayerName.length() > 1) {
                     Log.set(Log.LEVEL_DEBUG);
-                    ClientHandler clienthandler = new ClientHandler(PlayerName);
+                    ClientHandler clienthandler = new ClientHandler(PlayerName, ServerIP);
+                    clienthandler.connect();
                     if (!clienthandler.noServer()) {
                         LoadScreen loadScreen = new LoadScreen(clienthandler, game, game.getStartScreen());
                         game.setScreen(loadScreen);
@@ -145,8 +152,8 @@ public class StartScreen extends ScreenAdapter  {
                     }
                     if (clienthandler.noServer()){
                         Label NoHost = new Label("No Server found", labelStyle);
-                        NoHost.setSize(5,5);
-                        NoHost.setPosition(400,400);
+                        NoHost.setSize(30,30);
+                        NoHost.setPosition(380,650);
                         stage.addActor(NoHost);
 
 
@@ -158,8 +165,8 @@ public class StartScreen extends ScreenAdapter  {
         stage.addActor(FindBattle);
 
 
-
-        Label Name = new Label("Name:",labelStyle);
+        PlayerName = "bob";
+        Label Name = new Label("Name:" + "             " + PlayerName,labelStyle);
         Name.setSize(5,5);
         Name.setPosition(200,50);
         stage.addActor(Name);
@@ -196,7 +203,39 @@ public class StartScreen extends ScreenAdapter  {
         stage.addActor(textField);
         stage.addActor(confirmButton);
 
-    }
+        Label Name2 = new Label("Server IP:",labelStyle);
+        Name2.setSize(5,5);
+        Name2.setPosition(190,100);
+        stage.addActor(Name2);
+
+        TextField textField2 = new TextField("Enter Server IP", mySkin);
+        textField2.setAlignment(Align.center);
+        textField2.setSize(350, 40);
+        textField2.setPosition(150, 550);
+
+        TextButton confirmButton2 = new TextButton("Confirm", mySkin);
+        confirmButton2.setSize(200,40);
+        confirmButton2.setPosition(230,450);
+        confirmButton2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ServerIP = textField2.getText().trim();
+
+                // Handle the input text here
+                Name2.addAction(new Action() {
+                    @Override
+                    public boolean act(float v) {
+
+                        Name2.setText("Server IP:      " + ServerIP);
+                        return false;
+                    }
+                });
+            }
+        });
+        stage.addActor(textField2);
+        stage.addActor(confirmButton2);
+
+        }
 
     @Override
     public void render (float delta) {
