@@ -78,7 +78,6 @@ public class ClientHandler {
                     if (object instanceof NotifyMessage) {
                         connectedClient1 = ((NotifyMessage) object).connectedClient1;
                         connectedClient2 = ((NotifyMessage)object).connectedClient2;
-                        isReady = ((NotifyMessage)object).isReady;
 
 
 
@@ -95,7 +94,10 @@ public class ClientHandler {
                     }  else {
                         PlayerNumber = 1;
 
+
                     }
+                    System.out.println("YOU ARE PLAYER: " + PlayerNumber);
+                    isReady = true;
 
                 }
                 if (object instanceof PlayerInput) {

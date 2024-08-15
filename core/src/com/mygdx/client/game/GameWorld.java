@@ -71,6 +71,7 @@ public class GameWorld extends ApplicationAdapter {
     public GameWorld(ConnectedClient client1, ConnectedClient client2, int playernumber, ClientHandler clientHandler) {
         this.client1 = client1;
         this.client2 = client2;
+        System.out.println("FROM CLIENTHANDLER IN GAMEWORLD YOU ARE PLAYERNUMBER: " + clientHandler.getPlayerNumber());
         this.playernumber = playernumber;
         this.clientHandler = clientHandler;
 
@@ -81,6 +82,7 @@ public class GameWorld extends ApplicationAdapter {
 
     @Override
     public void create() {
+        System.out.println("FROM GAMEWORLD YOU ARE PLAYERNUMBER: " + playernumber);
 
             FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/pixelfont.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -134,9 +136,9 @@ public class GameWorld extends ApplicationAdapter {
 
             // Create the players
             if (playernumber == 1) {
-
-                localplayer = new Player(world,true, player1StartPos,1,clientHandler);
                 remoteplayer = new Player(world,  false, player2StartPos,2,clientHandler);
+                localplayer = new Player(world,true, player1StartPos,1,clientHandler);
+
 
                 localName = client1.getName();
                 remoteName = client2.getName();
@@ -144,7 +146,7 @@ public class GameWorld extends ApplicationAdapter {
 
 
 
-            } else if (playernumber == 0) {
+            } else if (playernumber == 2) {
                 remoteplayer = new Player(world,false, player1StartPos,1,clientHandler);
                 localplayer = new Player(world,  true, player2StartPos,2,clientHandler);
 
