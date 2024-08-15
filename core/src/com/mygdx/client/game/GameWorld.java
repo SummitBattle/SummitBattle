@@ -48,7 +48,7 @@ public class GameWorld extends ApplicationAdapter {
 
     ConnectedClient client1;
     ConnectedClient client2;
-    String playernumber;
+    int playernumber;
 
     CustomUserData localplayerdata;
     CustomUserData remoteplayerdata;
@@ -68,7 +68,7 @@ public class GameWorld extends ApplicationAdapter {
 
     Sound Wind;
 
-    public GameWorld(ConnectedClient client1, ConnectedClient client2, String playernumber, ClientHandler clientHandler) {
+    public GameWorld(ConnectedClient client1, ConnectedClient client2, int playernumber, ClientHandler clientHandler) {
         this.client1 = client1;
         this.client2 = client2;
         this.playernumber = playernumber;
@@ -133,7 +133,7 @@ public class GameWorld extends ApplicationAdapter {
 
 
             // Create the players
-            if (playernumber.equals("Player 1")) {
+            if (playernumber == 1) {
 
                 localplayer = new Player(world,true, player1StartPos,1,clientHandler);
                 remoteplayer = new Player(world,  false, player2StartPos,2,clientHandler);
@@ -144,7 +144,7 @@ public class GameWorld extends ApplicationAdapter {
 
 
 
-            } else if (playernumber.equals("Player 2")) {
+            } else if (playernumber == 0) {
                 remoteplayer = new Player(world,false, player1StartPos,1,clientHandler);
                 localplayer = new Player(world,  true, player2StartPos,2,clientHandler);
 
@@ -212,7 +212,6 @@ public class GameWorld extends ApplicationAdapter {
     @Override
     public void render() {
             camera.combined.scl(PPM);
-            System.out.println(DeadHandling);
             stateTime += Gdx.graphics.getDeltaTime() * 0.9;
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

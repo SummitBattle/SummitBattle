@@ -11,7 +11,7 @@ import com.mygdx.common.ConnectedClient;
 public class MainScreen extends ScreenAdapter {
     ConnectedClient player1;
     ConnectedClient player2;
-    String Playernumber;
+    int Playernumber;
 
 
     GameWorld gameworld;
@@ -24,7 +24,7 @@ public class MainScreen extends ScreenAdapter {
 
 
 
-    public MainScreen(ConnectedClient player1, ConnectedClient player2, String Playernumber, ClientHandler clientHandler, Game game, StartScreen startScreen){
+    public MainScreen(ConnectedClient player1, ConnectedClient player2, int Playernumber, ClientHandler clientHandler, Game game, StartScreen startScreen){
         this.player1 = player1;
         this.player2 = player2;
         this.Playernumber = Playernumber;

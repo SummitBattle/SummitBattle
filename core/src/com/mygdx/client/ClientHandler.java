@@ -29,7 +29,7 @@ public class ClientHandler {
 
 
 
-    String PlayerNumber;
+    int PlayerNumber;
     boolean isReady = false;
 
 
@@ -87,7 +87,15 @@ public class ClientHandler {
 
                 }
                 if (object instanceof PlayerNumberSend) {
+
                     PlayerNumber = ((PlayerNumberSend)object).Playernumber;
+                    System.out.println("RECEIVED PLAYERNUMBER " + PlayerNumber);
+                    if (PlayerNumber % 2 == 0) {
+                        PlayerNumber = 2;
+                    }  else {
+                        PlayerNumber = 1;
+
+                    }
 
                 }
                 if (object instanceof PlayerInput) {
@@ -128,7 +136,7 @@ public class ClientHandler {
     }
 
 
-    public String getPlayerNumber() {
+    public int getPlayerNumber() {
         return PlayerNumber;
     }
     public boolean getIsReady() {

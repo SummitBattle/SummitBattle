@@ -157,7 +157,7 @@ public class LoadScreen implements Screen {
 
         ConnectedClient c1 = clientHandler.getConnectedClient1();
         ConnectedClient c2 = clientHandler.getConnectedClient2();
-        String Playernumber = clientHandler.getPlayerNumber();
+        int Playernumber = clientHandler.getPlayerNumber();
 
         if (clientHandler.getIsReady()){
 
