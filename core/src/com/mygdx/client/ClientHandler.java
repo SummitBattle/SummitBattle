@@ -17,8 +17,9 @@ import java.net.InetAddress;
 public class ClientHandler {
     private static final int TIMEOUT = 5000;
     private static final String HOST = "127.0.0.1";
-    private static final int PORT = 5000; // Updated to match server port
-    private static final int UDPPort = 4999;
+    private static final int PORT = 5000; // Updated to match server port q
+
+
     String Serverip;
 
 
@@ -62,7 +63,7 @@ public class ClientHandler {
                 sendName.name = clientName;
 
 
-                client.sendUDP(sendName);
+                client.sendTCP(sendName);
 
 
 
@@ -82,21 +83,17 @@ public class ClientHandler {
 
 
                         PlayerNumberReq playerNumberReq = new PlayerNumberReq();
-                        client.sendUDP(playerNumberReq);
+                        client.sendTCP(playerNumberReq);
 
                 }
                 if (object instanceof PlayerNumberSend) {
 
                     PlayerNumber = ((PlayerNumberSend)object).Playernumber;
-                    System.out.println("RECEIVED PLAYERNUMBER " + PlayerNumber);
                     if (PlayerNumber % 2 == 0) {
                         PlayerNumber = 2;
                     }  else {
                         PlayerNumber = 1;
-
-
                     }
-                    System.out.println("YOU ARE PLAYER: " + PlayerNumber);
                     isReady = true;
 
                 }
@@ -120,7 +117,7 @@ public class ClientHandler {
 
     public void connect(){
         try {
-            client.connect(TIMEOUT, Serverip, PORT, UDPPort);
+            client.connect(TIMEOUT, Serverip, PORT);
         } catch (IOException ex) {
             noServer = true;
             ex.printStackTrace();
@@ -152,7 +149,7 @@ public class ClientHandler {
     public void SendInputs(PlayerInput playerInput) {
         PlayerInput playerInput1 = playerInput;
 
-        client.sendUDP(playerInput1);
+        client.sendTCP(playerInput1);
 
     }
 
